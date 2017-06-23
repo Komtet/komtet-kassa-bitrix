@@ -1,0 +1,8 @@
+<?php
+
+$MESS['KOMTETKASSA_REPORTS_TITLE'] = 'Отчёты';
+$MESS['KOMTETKASSA_REPORTS_MODULE_INCLUDE_ERROR'] = 'Не удалось полключить модуль "КОМТЕТ Касса"';
+$MESS['KOMTETKASSA_REPORTS_ITEM_ID'] = 'ИД';
+$MESS['KOMTETKASSA_REPORTS_ITEM_ORDER_ID'] = 'ИД Заказа';
+$MESS['KOMTETKASSA_REPORTS_ITEM_STATE'] = 'Состояние';
+$MESS['KOMTETKASSA_REPORTS_ITEM_ERROR_DESCR'] = 'Описание ошибки';

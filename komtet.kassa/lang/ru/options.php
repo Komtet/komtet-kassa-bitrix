@@ -1,0 +1,6 @@
+<?php
+$MESS['KOMTETKASSA_OPTIONS_SERVER_URL'] = 'API URL';
+$MESS['KOMTETKASSA_OPTIONS_SHOP_ID'] = 'Идентификатор магазина';
+$MESS['KOMTETKASSA_OPTIONS_SECRET_KEY'] = 'Секретный ключ';
+$MESS['KOMTETKASSA_OPTIONS_SHOULD_PRINT'] = 'Печатать чек';
+$MESS['KOMTETKASSA_OPTIONS_QUEUE_ID'] = 'Идентификатор очереди';
