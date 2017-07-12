@@ -48,13 +48,11 @@ class KomtetKassa
                 floatval($item['QUANTITY']),
                 floatval($item['PRICE'] * $item['QUANTITY']),
                 floatval($item['DISCOUNT_PRICE']),
-                Vat::calculate(0, $item['VAT_RATE'])
+                Vat::calculate(0, round(floatval($item['VAT_RATE']), 2))
             ));
         }
-
         $deliveryPrice = floatval($order['PRICE_DELIVERY']);
         $check->addPosition(new Position('Доставка', $deliveryPrice, 1, $deliveryPrice, 0, new Vat(0, 'no')));
-
         try {
             $this->manager->putCheck($check);
         } catch (SdkException $e) {

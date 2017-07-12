@@ -1,17 +1,29 @@
 <?php
+IncludeModuleLangFile(__FILE__);
 
 class komtet_kassa extends CModule
 {
-    public $MODULE_ID = 'komtet.kassa';
-    public $MODULE_VERSION = '0.1.0';
-    public $MODULE_VERSION_DATE = '2017-06-16 09:00';
-    public $MODULE_NAME = 'КОМТЕТ Касса';
-    public $MODULE_DESCRIPTION = 'Интеграция с сервисом печати чеков КОМТЕТ Касса';
+    var $MODULE_ID = 'komtet.kassa';
+    var $MODULE_NAME;
+    var $MODULE_DESCRIPTION;
+    var $MODULE_VERSION;
+    var $MODULE_VERSION_DATE;
     private $INSTALL_DIR;
 
     public function __construct()
     {
+        $this->MODULE_ID = "komtet.kassa";
+        $this->MODULE_NAME = GetMessage('KOMTETKASSA_MODULE_NAME');
+        $this->MODULE_DESCRIPTION = GetMessage('KOMTETKASSA_MODULE_DESCRIPTION');
+        $this->PARTNER_NAME = GetMessage('KOMTETKASSA_PARTNER_NAME');
+        $this->PARTNER_URI = "https://kassa.komtet.ru";
         $this->INSTALL_DIR = dirname(__file__);
+        $arModuleVersion = array();
+        include(realpath(sprintf('%s/version.php', $this->INSTALL_DIR)));
+        if (is_array($arModuleVersion) && array_key_exists("VERSION", $arModuleVersion)) {
+            $this->MODULE_VERSION = $arModuleVersion["VERSION"];
+            $this->MODULE_VERSION_DATE = $arModuleVersion["VERSION_DATE"];
+        }
     }
 
     public function DoInstall()
