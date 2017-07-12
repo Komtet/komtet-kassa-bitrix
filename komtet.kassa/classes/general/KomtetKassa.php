@@ -44,7 +44,7 @@ class KomtetKassa
         while ($item = $dbBasket->GetNext()) {
             $check->addPosition(new Position(
                 $item['NAME'],
-                floatval($item['PRICE']),
+                floatval($item['PRICE'] + $item['DISCOUNT_PRICE']),
                 floatval($item['QUANTITY']),
                 floatval($item['PRICE'] * $item['QUANTITY']),
                 floatval($item['DISCOUNT_PRICE']),
