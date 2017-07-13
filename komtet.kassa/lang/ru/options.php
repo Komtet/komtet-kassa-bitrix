@@ -4,3 +4,11 @@ $MESS['KOMTETKASSA_OPTIONS_SHOP_ID'] = 'Идентификатор магази�
 $MESS['KOMTETKASSA_OPTIONS_SECRET_KEY'] = 'Секретный ключ';
 $MESS['KOMTETKASSA_OPTIONS_SHOULD_PRINT'] = 'Печатать чек';
 $MESS['KOMTETKASSA_OPTIONS_QUEUE_ID'] = 'Идентификатор очереди';
+$MESS['KOMTETKASSA_OPTIONS_TAX_SYSTEM'] = 'Система налогооблажения';
+
+$MESS['KOMTETKASSA_OPTIONS_TS_COMMON'] = 'ОСН';
+$MESS['KOMTETKASSA_OPTIONS_TS_SIMPLIFIED_IN'] = 'УСН доход';
+$MESS['KOMTETKASSA_OPTIONS_TS_SIMPLIFIED_IN_OUT'] = 'УСН доход - расход';
+$MESS['KOMTETKASSA_OPTIONS_TS_UTOII'] = 'ЕНВД';
+$MESS['KOMTETKASSA_OPTIONS_TS_UST'] = 'ЕСН';
+$MESS['KOMTETKASSA_OPTIONS_TS_PATENT'] = 'Патент';

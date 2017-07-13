@@ -1,4 +1,5 @@
 <?php
+use Komtet\KassaSdk\Check;
 
 if (!$USER->IsAdmin()) {
     return;
@@ -20,7 +21,8 @@ if ($REQUEST_METHOD == 'POST' && check_bitrix_sessid()) {
         'shop_id' => 'string',
         'secret_key' => 'string',
         'should_print' => 'bool',
-        'queue_id' => 'string'
+        'queue_id' => 'string',
+        'tax_system' => 'integer'
     );
     foreach ($data as $key => $type) {
         $value = filter_input(INPUT_POST, strtoupper($key));
@@ -28,6 +30,8 @@ if ($REQUEST_METHOD == 'POST' && check_bitrix_sessid()) {
             COption::SetOptionString($moduleId, $key, $value);
         } else if ($type == 'bool') {
             COption::SetOptionInt($moduleId, $key, $value === null ? 0 : 1);
+        } else if ($type == 'integer') {
+            COption::SetOptionInt($moduleId, $key, $value);
         }
     }
 }
@@ -95,6 +99,21 @@ $form->AddEditField(
         'maxlength' => 255
     ),
     COption::GetOptionString($moduleId, 'queue_id')
+);
+
+$form->AddDropDownField(
+    'TAX_SYSTEM',
+    GetMessage('KOMTETKASSA_OPTIONS_TAX_SYSTEM'),
+    true,
+    array(
+        Check::TS_COMMON => GetMessage('KOMTETKASSA_OPTIONS_TS_COMMON'),
+        Check::TS_SIMPLIFIED_IN => GetMessage('KOMTETKASSA_OPTIONS_TS_SIMPLIFIED_IN'),
+        Check::TS_SIMPLIFIED_IN_OUT => GetMessage('KOMTETKASSA_OPTIONS_TS_SIMPLIFIED_IN_OUT'),
+        Check::TS_UTOII => GetMessage('KOMTETKASSA_OPTIONS_TS_UTOII'),
+        Check::TS_UST => GetMessage('KOMTETKASSA_OPTIONS_TS_UST'),
+        Check::TS_PATENT => GetMessage('KOMTETKASSA_OPTIONS_TS_PATENT')
+    ),
+    COption::GetOptionString($moduleId, 'tax_system')
 );
 
 $form->Buttons(array(
