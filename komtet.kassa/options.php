@@ -1,13 +1,16 @@
 <?php
+$moduleId = 'komtet.kassa';
+
+use Bitrix\Main\Loader,
+    Bitrix\Main\Localization\Loc;
 use Komtet\KassaSdk\Check;
 
 if (!$USER->IsAdmin()) {
     return;
 }
 
-IncludeModuleLangFile(__FILE__);
-
-$moduleId = 'komtet.kassa';
+Loader::includeModule($moduleId);
+Loc::loadMessages(__FILE__);
 
 $form = new CAdminForm('tabControl', array(array(
     'DIV' => $moduleId.'-options',
