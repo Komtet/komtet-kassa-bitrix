@@ -50,12 +50,12 @@ foreach (array('external_id', 'state') as $key) {
 }
 $orderID = $data['external_id'];
 $success = $data['state'] == 'done';
-$errorDescription = $success && array_key_exists('error_description', $data) ? $data['error_description'] : '';
+$errorDescription = !$success ? $data['error_description'] : '';
 
 try {
     KomtetKassaReportsTable::add([
         'order_id' => $orderID,
-        'state' => $success ? 0 : 1,
+        'state' => intval(!$success),
         'error_description' => $errorDescription]
     );
 } catch (\Exception $e) {

@@ -89,7 +89,6 @@ class KomtetKassa
             'queue_id' => COption::GetOptionString($moduleID, 'queue_id'),
             'server_url' => COption::GetOptionString($moduleID, 'server_url'),
             'should_print' => COption::GetOptionInt($moduleID, 'should_print') == 1,
-            // intval() для совместимости с версиями ядра ниже 17-той
             'tax_system' => intval(COption::GetOptionInt($moduleID, 'tax_system'))
         );
         foreach (array('key', 'secret', 'queue_id', 'tax_system') as $key) {
