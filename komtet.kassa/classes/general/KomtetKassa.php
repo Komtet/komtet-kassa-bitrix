@@ -46,9 +46,9 @@ class KomtetKassa
         while ($item = $dbBasket->GetNext()) {
             $itemPrice = floatval($item['PRICE'] + $item['DISCOUNT_PRICE']);
             if ($this->taxSystem == Check::TS_COMMON) {
-                $itemVat = Vat::calculate($itemPrice, round(floatval($item['VAT_RATE']), 2));
+                $itemVatRate = round(floatval($item['VAT_RATE']), 2);
             } else {
-                $itemVat = new Vat(0, Vat::RATE_NO);
+                $itemVatRate = Vat::RATE_NO;
             }
             $check->addPosition(new Position(
                 $item['NAME'],
@@ -56,7 +56,7 @@ class KomtetKassa
                 floatval($item['QUANTITY']),
                 floatval($item['PRICE'] * $item['QUANTITY']),
                 floatval($item['DISCOUNT_PRICE']),
-                $itemVat
+                new Vat($itemVatRate)
             ));
         }
         $deliveryPrice = floatval($order['PRICE_DELIVERY']);
