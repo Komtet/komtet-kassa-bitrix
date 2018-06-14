@@ -18,9 +18,6 @@ class KomtetKassa
     {
         $options = $this->getOptions();
         $client = new Client($options['key'], $options['secret']);
-        if (!empty($options['server_url'])) {
-            $client->setHost($options['server_url']);
-        }
         $this->manager = new QueueManager($client);
         $this->manager->registerQueue('default', $options['queue_id']);
         $this->manager->setDefaultQueue('default');
@@ -110,7 +107,6 @@ class KomtetKassa
             'key' => COption::GetOptionString($moduleID, 'shop_id'),
             'secret' => COption::GetOptionString($moduleID, 'secret_key'),
             'queue_id' => COption::GetOptionString($moduleID, 'queue_id'),
-            'server_url' => COption::GetOptionString($moduleID, 'server_url'),
             'should_print' => COption::GetOptionInt($moduleID, 'should_print') == 1,
             'tax_system' => intval(COption::GetOptionInt($moduleID, 'tax_system')),
             'pay_systems' => json_decode(COption::GetOptionString($moduleID, 'pay_systems'))

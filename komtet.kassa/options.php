@@ -20,7 +20,6 @@ $form = new CAdminForm('tabControl', array(array(
 
 if ($REQUEST_METHOD == 'POST' && check_bitrix_sessid()) {
     $data = array(
-        'server_url' => 'string',
         'shop_id' => 'string',
         'secret_key' => 'string',
         'should_print' => 'bool',
@@ -55,17 +54,6 @@ $form->EndEpilogContent();
 $form->Begin(array('FORM_ACTION' => '/bitrix/admin/settings.php?'.$queryData));
 
 $form->BeginNextFormTab();
-
-$form->AddEditField(
-    'SERVER_URL',
-    GetMessage('KOMTETKASSA_OPTIONS_SERVER_URL'),
-    true,
-    array(
-        'size' => 50,
-        'maxlength' => 255
-    ),
-    COption::GetOptionString($moduleId, 'server_url')
-);
 
 $form->AddEditField(
     'SHOP_ID',
