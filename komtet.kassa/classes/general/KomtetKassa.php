@@ -18,23 +18,43 @@ class KomtetKassa
     {
         $options = $this->getOptions();
         $client = new Client($options['key'], $options['secret']);
-        if (!empty($options['server_url'])) {
-            $client->setHost($options['server_url']);
-        }
         $this->manager = new QueueManager($client);
         $this->manager->registerQueue('default', $options['queue_id']);
         $this->manager->setDefaultQueue('default');
         $this->shouldPrint = $options['should_print'];
         $this->taxSystem = $options['tax_system'];
+        $this->paySystems = $options['pay_systems'];
+    }
+
+    protected function getPayment($paySystemId, $personTypeId, $sum) {
+        $arFilter = array(
+            'PAY_SYSTEM_ID' => $paySystemId,
+            'PERSON_TYPE_ID' => $personTypeId
+        );
+        $resPaySystemAction = CSalePaySystemAction::GetList(array(), $arFilter);
+        while ($pAction = $resPaySystemAction->Fetch()) {
+            $arPath = explode('/', $pAction['ACTION_FILE']);
+            if (end($arPath) == 'cash') {
+                return Payment::createCash($sum);
+            }
+        }
+        return Payment::createCard($sum);
     }
 
     public function printCheck($orderID)
     {
         $order = CSaleOrder::GetByID($orderID);
+        if ($this->paySystems and !in_array($order['PAY_SYSTEM_ID'], $this->paySystems)) {
+          return;
+        }
+
         $user = CUSer::GetByID($order['USER_ID'])->Fetch();
         $check = Check::createSell($orderID, $user['EMAIL'], $this->taxSystem);
         $check->setShouldPrint($this->shouldPrint);
-        $check->addPayment(Payment::createCard(floatval($order['PRICE'])));
+
+        $payment = $this->getPayment($order['PAY_SYSTEM_ID'], $order['PERSON_TYPE_ID'],
+                                     floatval($order['PRICE']));
+        $check->addPayment($payment);
 
         $dbBasket = CSaleBasket::GetList(
             array("ID" => "ASC"),
@@ -87,9 +107,9 @@ class KomtetKassa
             'key' => COption::GetOptionString($moduleID, 'shop_id'),
             'secret' => COption::GetOptionString($moduleID, 'secret_key'),
             'queue_id' => COption::GetOptionString($moduleID, 'queue_id'),
-            'server_url' => COption::GetOptionString($moduleID, 'server_url'),
             'should_print' => COption::GetOptionInt($moduleID, 'should_print') == 1,
-            'tax_system' => intval(COption::GetOptionInt($moduleID, 'tax_system'))
+            'tax_system' => intval(COption::GetOptionInt($moduleID, 'tax_system')),
+            'pay_systems' => json_decode(COption::GetOptionString($moduleID, 'pay_systems'))
         );
         foreach (array('key', 'secret', 'queue_id', 'tax_system') as $key) {
             if (empty($result[$key])) {
