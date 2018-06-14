@@ -29,6 +29,21 @@ class KomtetKassa
         $this->paySystems = $options['pay_systems'];
     }
 
+    protected function getPayment($paySystemId, $personTypeId, $sum) {
+        $arFilter = array(
+            'PAY_SYSTEM_ID' => $paySystemId,
+            'PERSON_TYPE_ID' => $personTypeId
+        );
+        $resPaySystemAction = CSalePaySystemAction::GetList(array(), $arFilter);
+        while ($pAction = $resPaySystemAction->Fetch()) {
+            $arPath = explode('/', $pAction['ACTION_FILE']);
+            if (end($arPath) == 'cash') {
+                return Payment::createCash($sum);
+            }
+        }
+        return Payment::createCard($sum);
+    }
+
     public function printCheck($orderID)
     {
         $order = CSaleOrder::GetByID($orderID);
@@ -39,7 +54,10 @@ class KomtetKassa
         $user = CUSer::GetByID($order['USER_ID'])->Fetch();
         $check = Check::createSell($orderID, $user['EMAIL'], $this->taxSystem);
         $check->setShouldPrint($this->shouldPrint);
-        $check->addPayment(Payment::createCard(floatval($order['PRICE'])));
+
+        $payment = $this->getPayment($order['PAY_SYSTEM_ID'], $order['PERSON_TYPE_ID'],
+                                     floatval($order['PRICE']));
+        $check->addPayment($payment);
 
         $dbBasket = CSaleBasket::GetList(
             array("ID" => "ASC"),
