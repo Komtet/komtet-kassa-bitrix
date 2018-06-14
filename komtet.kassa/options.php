@@ -25,7 +25,8 @@ if ($REQUEST_METHOD == 'POST' && check_bitrix_sessid()) {
         'secret_key' => 'string',
         'should_print' => 'bool',
         'queue_id' => 'string',
-        'tax_system' => 'integer'
+        'tax_system' => 'integer',
+        'pay_systems' => 'array'
     );
     foreach ($data as $key => $type) {
         $value = filter_input(INPUT_POST, strtoupper($key));
@@ -35,6 +36,9 @@ if ($REQUEST_METHOD == 'POST' && check_bitrix_sessid()) {
             COption::SetOptionInt($moduleId, $key, $value === null ? 0 : 1);
         } else if ($type == 'integer') {
             COption::SetOptionInt($moduleId, $key, $value);
+        } else if ($type == 'array') {
+            $value = filter_input(INPUT_POST, strtoupper($key), FILTER_DEFAULT, FILTER_FORCE_ARRAY);
+            COption::SetOptionString($moduleId, $key, json_encode($value));
         }
     }
 }
@@ -117,6 +121,43 @@ $form->AddDropDownField(
         Check::TS_PATENT => GetMessage('KOMTETKASSA_OPTIONS_TS_PATENT')
     ),
     COption::GetOptionString($moduleId, 'tax_system')
+);
+
+function AddMultiSelectField($form, $id, $content, $required, $arSelect, $value=false, $arParams=array())
+{
+  if($value === false)
+    $value = $form->arFieldValues[$id];
+
+  $html = '<select name="'.$id.'" multiple';
+  foreach($arParams as $param)
+    $html .= ' '.$param;
+  $html .= '>';
+
+  foreach($arSelect as $key => $val)
+    $html .= '<option value="'.htmlspecialcharsbx($key).'"'.(in_array($key, $value)? ' selected': '').'>'.htmlspecialcharsex($val).'</option>';
+  $html .= '</select>';
+
+  $form->tabs[$form->tabIndex]["FIELDS"][$id] = array(
+    "id" => $id,
+    "required" => $required,
+    "content" => $content,
+    "html" => '<td width="40%">'.($required? '<span class="adm-required-field">'.$form->GetCustomLabelHTML($id, $content).'</span>': $form->GetCustomLabelHTML($id, $content)).'</td><td>'.$html.'</td>',
+    "hidden" => '<input type="hidden" name="'.$id.'" value="'.htmlspecialcharsbx($value).'">',
+  );
+}
+
+$arPaySystem = array();
+$resPaySystem = CSalePaySystem::GetList($arOrder = Array("SORT"=>"ASC", "NAME"=>"ASC"));
+while ($ptype = $resPaySystem->Fetch()) {
+    $arPaySystem[$ptype["ID"]] = $ptype["NAME"];
+}
+AddMultiSelectField(
+    $form,
+    'PAY_SYSTEMS[]',
+    GetMessage('KOMTETKASSA_OPTIONS_PAY_SYSTEMS'),
+    false,
+    $arPaySystem,
+    json_decode(COption::GetOptionString($moduleId, 'pay_systems'))
 );
 
 $form->Buttons(array(

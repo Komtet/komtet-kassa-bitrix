@@ -26,11 +26,16 @@ class KomtetKassa
         $this->manager->setDefaultQueue('default');
         $this->shouldPrint = $options['should_print'];
         $this->taxSystem = $options['tax_system'];
+        $this->paySystems = $options['pay_systems'];
     }
 
     public function printCheck($orderID)
     {
         $order = CSaleOrder::GetByID($orderID);
+        if ($this->paySystems and !in_array($order['PAY_SYSTEM_ID'], $this->paySystems)) {
+          return;
+        }
+
         $user = CUSer::GetByID($order['USER_ID'])->Fetch();
         $check = Check::createSell($orderID, $user['EMAIL'], $this->taxSystem);
         $check->setShouldPrint($this->shouldPrint);
@@ -89,7 +94,8 @@ class KomtetKassa
             'queue_id' => COption::GetOptionString($moduleID, 'queue_id'),
             'server_url' => COption::GetOptionString($moduleID, 'server_url'),
             'should_print' => COption::GetOptionInt($moduleID, 'should_print') == 1,
-            'tax_system' => intval(COption::GetOptionInt($moduleID, 'tax_system'))
+            'tax_system' => intval(COption::GetOptionInt($moduleID, 'tax_system')),
+            'pay_systems' => json_decode(COption::GetOptionString($moduleID, 'pay_systems'))
         );
         foreach (array('key', 'secret', 'queue_id', 'tax_system') as $key) {
             if (empty($result[$key])) {
