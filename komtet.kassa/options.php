@@ -10,6 +10,7 @@ if (!$USER->IsAdmin()) {
 }
 
 Loader::includeModule($moduleId);
+Loader::includeModule('sale');
 Loc::loadMessages(__FILE__);
 
 $form = new CAdminForm('tabControl', array(array(
