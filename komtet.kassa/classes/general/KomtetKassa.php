@@ -63,6 +63,8 @@ class KomtetKassa
             false,
             array("NAME", "QUANTITY", "PRICE", "DISCOUNT_PRICE", "VAT_RATE")
         );
+
+
         while ($item = $dbBasket->GetNext()) {
             $itemPrice = floatval($item['PRICE'] + $item['DISCOUNT_PRICE']);
             if ($this->taxSystem == Check::TS_COMMON) {
@@ -70,8 +72,9 @@ class KomtetKassa
             } else {
                 $itemVatRate = Vat::RATE_NO;
             }
+
             $check->addPosition(new Position(
-                $item['NAME'],
+                mb_convert_encoding($item['NAME'], 'UTF-8', LANG_CHARSET),
                 $itemPrice,
                 floatval($item['QUANTITY']),
                 floatval($item['PRICE'] * $item['QUANTITY']),
@@ -90,14 +93,34 @@ class KomtetKassa
 
     public static function handleSalePayOrder($id, $val)
     {
+        if (gettype($id) == 'object') {
+            return;
+        }
+
         if ($val == 'N') {
             return;
         }
         if (!CModule::IncludeModule('sale')) {
             return;
         }
+
         $ok = new KomtetKassa();
         $ok->printCheck($id);
+    }
+
+    public static function newHandleSalePayOrder($order)
+    {
+        if (!gettype($id) == 'object')
+        {
+            return;
+        }
+
+        if (!$order->isPaid()) {
+            return;
+        }
+
+        $ok = new KomtetKassa();
+        $ok->printCheck($order->getId());
     }
 
     private function getOptions()
