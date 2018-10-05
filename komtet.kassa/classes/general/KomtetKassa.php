@@ -27,15 +27,29 @@ class KomtetKassa
     }
 
     protected function getPayment($paySystemId, $personTypeId, $sum) {
-        $arFilter = array(
-            'PAY_SYSTEM_ID' => $paySystemId,
-            'PERSON_TYPE_ID' => $personTypeId
-        );
-        $resPaySystemAction = CSalePaySystemAction::GetList(array(), $arFilter);
-        while ($pAction = $resPaySystemAction->Fetch()) {
-            $arPath = explode('/', $pAction['ACTION_FILE']);
-            if (end($arPath) == 'cash') {
-                return Payment::createCash($sum);
+
+        global $DB;
+        $strSql = "SELECT * FROM b_sale_pay_system_action WHERE  PAY_SYSTEM_ID = $paySystemId";
+        $res = $DB->Query($strSql);
+
+        while ($pAction = $res->Fetch()) {
+            if (array_key_exists('IS_CASH', $pAction)) {
+                if ($pAction['IS_CASH'] == 'Y') {
+                    return Payment::createCash($sum);
+                }
+            }
+            else {
+                $arFilter = array(
+                    'PAY_SYSTEM_ID' => $paySystemId,
+                    'PERSON_TYPE_ID' => $personTypeId
+                );
+                $resPaySystemAction = CSalePaySystemAction::GetList(array(), $arFilter);
+                while ($pAction = $resPaySystemAction->Fetch()) {
+                    $arPath = explode('/', $pAction['ACTION_FILE']);
+                    if (end($arPath) == 'cash') {
+                        return Payment::createCash($sum);
+                    }
+                }
             }
         }
         return Payment::createCard($sum);
