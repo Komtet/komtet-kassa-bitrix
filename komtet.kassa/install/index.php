@@ -36,6 +36,7 @@ class komtet_kassa extends CModule
         COption::SetOptionInt($this->MODULE_ID, 'should_print', 1);
         RegisterModule($this->MODULE_ID);
         RegisterModuleDependences('sale', 'OnSalePayOrder', $this->MODULE_ID, 'KomtetKassa', 'handleSalePayOrder');
+        RegisterModuleDependences('sale', 'OnSaleOrderPaid', $this->MODULE_ID, 'KomtetKassa', 'newHandleSalePayOrder');
         return true;
     }
 
@@ -66,6 +67,7 @@ class komtet_kassa extends CModule
     {
         COption::RemoveOption($this->MODULE_ID);
         UnRegisterModuleDependences("sale", "OnSalePayOrder", $this->MODULE_ID, "KomtetKassa", "handleSalePayOrder");
+        UnRegisterModuleDependences("sale", "OnSaleOrderPaid", $this->MODULE_ID, "KomtetKassa", "newHandleSalePayOrder");
         UnRegisterModule($this->MODULE_ID);
         $this->DoUninstallDB();
         $this->DoUninstallFiles();
