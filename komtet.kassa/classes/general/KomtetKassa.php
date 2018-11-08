@@ -134,7 +134,7 @@ class KomtetKassaOld extends KomtetKassaBase
 
         $checkPayment = $this->getPayment($order['PAY_SYSTEM_ID'],
                                           $order['PERSON_TYPE_ID'],
-                                          $order['PRICE']);
+                                          floatval($order['PRICE']));
         $check->addPayment($checkPayment);
 
         $dbBasket = CSaleBasket::GetList(
