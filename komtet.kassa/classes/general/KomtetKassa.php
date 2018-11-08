@@ -154,7 +154,7 @@ class KomtetKassaOld extends KomtetKassaBase
 
             $check->addPosition(new Position(
                 mb_convert_encoding($item['NAME'], 'UTF-8', LANG_CHARSET),
-                $item['PRICE'],
+                floatval($item['PRICE']),
                 floatval($item['QUANTITY']),
                 floatval(($item['PRICE'] - $item['DISCOUNT_PRICE']) * $item['QUANTITY']),
                 floatval($item['DISCOUNT_PRICE']),
