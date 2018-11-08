@@ -35,8 +35,15 @@ class komtet_kassa extends CModule
         COption::SetOptionString($this->MODULE_ID, 'server_url', 'https://kassa.komtet.ru');
         COption::SetOptionInt($this->MODULE_ID, 'should_print', 1);
         RegisterModule($this->MODULE_ID);
-        RegisterModuleDependences('sale', 'OnSalePayOrder', $this->MODULE_ID, 'KomtetKassa', 'handleSalePayOrder');
-        RegisterModuleDependences('sale', 'OnSaleOrderPaid', $this->MODULE_ID, 'KomtetKassa', 'newHandleSalePayOrder');
+
+        if (version_compare(SM_VERSION, '15.5.0', '<')) {
+            RegisterModuleDependences('sale', 'OnSalePayOrder', $this->MODULE_ID, 'KomtetKassa', 'handleSalePayOrder');
+        }
+        else {
+            RegisterModuleDependences('sale', 'OnSaleOrderPaid', $this->MODULE_ID, 'KomtetKassa', 'newHandleSalePayOrder');
+            // RegisterModuleDependences('sale', 'OnSaleOrderSaved', $this->MODULE_ID, 'KomtetKassa', 'newHandleSaleSaveOrder');
+        }
+
         return true;
     }
 
@@ -68,6 +75,7 @@ class komtet_kassa extends CModule
         COption::RemoveOption($this->MODULE_ID);
         UnRegisterModuleDependences("sale", "OnSalePayOrder", $this->MODULE_ID, "KomtetKassa", "handleSalePayOrder");
         UnRegisterModuleDependences("sale", "OnSaleOrderPaid", $this->MODULE_ID, "KomtetKassa", "newHandleSalePayOrder");
+        // UnRegisterModuleDependences('sale', 'OnSaleOrderSaved', $this->MODULE_ID, 'KomtetKassa', 'newHandleSaleSaveOrder');
         UnRegisterModule($this->MODULE_ID);
         $this->DoUninstallDB();
         $this->DoUninstallFiles();
