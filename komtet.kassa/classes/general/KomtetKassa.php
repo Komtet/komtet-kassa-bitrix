@@ -164,7 +164,7 @@ class KomtetKassaOld extends KomtetKassaBase
 
         $deliveryPrice = floatval($order['PRICE_DELIVERY']);
         if ($deliveryPrice > 0.0) {
-            $check->addPosition(new Position('Доставка', $deliveryPrice, 1, $deliveryPrice, 0, new Vat(0, Vat::RATE_NO)));
+            $check->addPosition(new Position(mb_convert_encoding('Доставка', 'UTF-8', LANG_CHARSET), $deliveryPrice, 1, $deliveryPrice, 0, new Vat(0, Vat::RATE_NO)));
         }
 
         try {
@@ -196,14 +196,24 @@ class KomtetKassaD7 extends KomtetKassaBase {
         $check = Check::createSell($order->getId(), $userEmail->getValue(), $this->taxSystem);
         $check->setShouldPrint($this->shouldPrint);
 
+        $payments = array();
         $paymentCollection = $order->getPaymentCollection();
         foreach ($paymentCollection as $payment) {
             if ($this->paySystems and !in_array($payment->getPaymentSystemId(), $this->paySystems)) {
-              continue;
+                continue;
             }
 
             $checkPayment = $this->getPayment($payment);
-            $check->addPayment($checkPayment);
+
+            $payments[] = $checkPayment;
+        }
+
+        if empty($payments) {
+            return;
+        }
+
+        foreach ($payments as $payment) {
+            $check->addPayment($payment);
         }
 
         $positions = $order->getBasket();
@@ -227,7 +237,7 @@ class KomtetKassaD7 extends KomtetKassaBase {
 
         $deliveryPrice = floatval($order->getDeliveryPrice());
         if ($deliveryPrice > 0.0) {
-            $check->addPosition(new Position('Доставка', $deliveryPrice, 1, $deliveryPrice, 0, new Vat(0, Vat::RATE_NO)));
+            $check->addPosition(new Position(mb_convert_encoding('Доставка', 'UTF-8', LANG_CHARSET), $deliveryPrice, 1, $deliveryPrice, 0, new Vat(0, Vat::RATE_NO)));
         }
 
         try {
