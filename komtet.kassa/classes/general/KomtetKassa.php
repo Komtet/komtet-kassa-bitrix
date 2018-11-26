@@ -208,7 +208,7 @@ class KomtetKassaD7 extends KomtetKassaBase {
             $payments[] = $checkPayment;
         }
 
-        if empty($payments) {
+        if (empty($payments)) {
             return;
         }
 
