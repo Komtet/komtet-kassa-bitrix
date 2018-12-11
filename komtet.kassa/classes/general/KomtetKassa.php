@@ -246,9 +246,9 @@ class KomtetKassaD7 extends KomtetKassaBase {
             if ($shipment->getPrice() > 0.0) {
                 $check->addPosition(new Position(
                     mb_convert_encoding($shipment->getField('DELIVERY_NAME'), 'UTF-8', LANG_CHARSET),
-                    round($shipment->getPrice()),
+                    round($shipment->getPrice(), 2),
                     1,
-                    round($shipment->getPrice()),
+                    round($shipment->getPrice(), 2),
                     0.0,
                     new Vat(0, Vat::RATE_NO)));
             }
