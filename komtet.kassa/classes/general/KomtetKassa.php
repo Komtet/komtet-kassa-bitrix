@@ -154,17 +154,24 @@ class KomtetKassaOld extends KomtetKassaBase
 
             $check->addPosition(new Position(
                 mb_convert_encoding($item['NAME'], 'UTF-8', LANG_CHARSET),
-                floatval($item['PRICE']),
+                round($item['PRICE'], 2),
                 floatval($item['QUANTITY']),
-                floatval(($item['PRICE'] - $item['DISCOUNT_PRICE']) * $item['QUANTITY']),
+                round(($item['PRICE'] - $item['DISCOUNT_PRICE']) * $item['QUANTITY'], 2),
                 floatval($item['DISCOUNT_PRICE']),
                 new Vat($itemVatRate)
             ));
         }
 
-        $deliveryPrice = floatval($order['PRICE_DELIVERY']);
+        $deliveryPrice = round($order['PRICE_DELIVERY'], 2);
         if ($deliveryPrice > 0.0) {
-            $check->addPosition(new Position(mb_convert_encoding('Доставка', 'UTF-8', LANG_CHARSET), $deliveryPrice, 1, $deliveryPrice, 0, new Vat(0, Vat::RATE_NO)));
+            $delivery = CSaleDelivery::GetByID($order['DELIVERY_ID']);
+            $check->addPosition(new Position(
+                mb_convert_encoding($delivery['NAME'], 'UTF-8', LANG_CHARSET),
+                $deliveryPrice,
+                1,
+                $deliveryPrice,
+                0.0,
+                new Vat(0, Vat::RATE_NO)));
         }
 
         try {
@@ -226,18 +233,25 @@ class KomtetKassaD7 extends KomtetKassaBase {
 
             $check->addPosition(new Position(
                 mb_convert_encoding($position->getField('NAME'), 'UTF-8', LANG_CHARSET),
-                floatval($position->getPrice()),
+                round($position->getPrice(), 2),
                 $position->getQuantity(),
-                floatval($position->getFinalPrice()),
+                round($position->getFinalPrice(), 2),
                 0.0,
                 new Vat($itemVatRate)
             ));
-
         }
 
-        $deliveryPrice = floatval($order->getDeliveryPrice());
-        if ($deliveryPrice > 0.0) {
-            $check->addPosition(new Position(mb_convert_encoding('Доставка', 'UTF-8', LANG_CHARSET), $deliveryPrice, 1, $deliveryPrice, 0, new Vat(0, Vat::RATE_NO)));
+        $shipmentCollection = $order->getShipmentCollection();
+        foreach ($shipmentCollection as $shipment) {
+            if ($shipment->getPrice() > 0.0) {
+                $check->addPosition(new Position(
+                    mb_convert_encoding($shipment->getField('DELIVERY_NAME'), 'UTF-8', LANG_CHARSET),
+                    round($shipment->getPrice(), 2),
+                    1,
+                    round($shipment->getPrice(), 2),
+                    0.0,
+                    new Vat(0, Vat::RATE_NO)));
+            }
         }
 
         try {
