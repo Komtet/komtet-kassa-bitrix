@@ -8,6 +8,8 @@ use Komtet\KassaSdk\Position;
 use Komtet\KassaSdk\QueueManager;
 use Komtet\KassaSdk\Vat;
 
+use Bitrix\Main\UserTable;
+
 
 class KomtetKassa
 {
@@ -118,11 +120,11 @@ class KomtetKassaOld extends KomtetKassaBase
             while ($pAction = $resPaySystemAction->Fetch()) {
                 $arPath = explode('/', $pAction['ACTION_FILE']);
                 if (end($arPath) == 'cash') {
-                    return Payment::createCash($sum);
+                    return Payment::createCash(round($sum, 2));
                 }
             }
         }
-        return Payment::createCard($sum);
+        return Payment::createCard(round($sum, 2));
     }
 
     public function printCheck($orderID) {
@@ -190,17 +192,36 @@ class KomtetKassaD7 extends KomtetKassaBase {
         $paySystem = $payment->getPaySystem();
 
         if ($paySystem->isCash()) {
-            return Payment::createCash($payment->getSum());
+            return Payment::createCash(round($payment->getSum(), 2));
         }
-        return Payment::createCard($payment->getSum());
+        return Payment::createCard(round($payment->getSum(), 2));
     }
 
     public function printCheck($order) {
 
         $propertyCollection = $order->getPropertyCollection();
         $userEmail = $propertyCollection->getUserEmail();
+        if ($userEmail) {
+            $userEmail = $userEmail->getValue();
+        }
+        else { // if email field have not flag "is_email"
+            foreach($propertyCollection as $orderProperty) {
+                if($orderProperty->getField('CODE') == 'EMAIL') {
+                    $userEmail = $orderProperty->getValue();
+                    break;
+                }
+            }
+        }
 
-        $check = Check::createSell($order->getId(), $userEmail->getValue(), $this->taxSystem);
+        // get email from order user
+        if (!$userEmail) {
+            $userId = $order->getUserId();
+            $rsUser = UserTable::getById($userId);
+            $user = $rsUser->fetch();
+            $userEmail = $user['EMAIL'];
+        }
+
+        $check = Check::createSell($order->getId(), $userEmail, $this->taxSystem);
         $check->setShouldPrint($this->shouldPrint);
 
         $payments = array();
@@ -211,7 +232,6 @@ class KomtetKassaD7 extends KomtetKassaBase {
             }
 
             $checkPayment = $this->getPayment($payment);
-
             $payments[] = $checkPayment;
         }
 
