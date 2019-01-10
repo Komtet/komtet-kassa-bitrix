@@ -36,7 +36,9 @@ class komtet_kassa extends CModule
         COption::SetOptionInt($this->MODULE_ID, 'should_print', 1);
         RegisterModule($this->MODULE_ID);
 
-        if (version_compare(SM_VERSION, '15.5.0', '<')) {
+        $saleModuleInfo = CModule::CreateModuleObject('sale');
+
+        if (version_compare($saleModuleInfo->MODULE_VERSION, '15.5.0', '<')) {
             RegisterModuleDependences('sale', 'OnSalePayOrder', $this->MODULE_ID, 'KomtetKassa', 'handleSalePayOrder');
         }
         else {
