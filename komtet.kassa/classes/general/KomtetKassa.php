@@ -119,11 +119,11 @@ class KomtetKassaOld extends KomtetKassaBase
             while ($pAction = $resPaySystemAction->Fetch()) {
                 $arPath = explode('/', $pAction['ACTION_FILE']);
                 if (end($arPath) == 'cash') {
-                    return Payment::createCash(round($sum, 2));
+                    return new Payment(Payment::TYPE_CASH, round($sum, 2));
                 }
             }
         }
-        return Payment::createCard(round($sum, 2));
+        return new Payment(Payment::TYPE_CARD, round($sum, 2));
     }
 
     public function printCheck($orderID) {
@@ -200,9 +200,9 @@ class KomtetKassaD7 extends KomtetKassaBase {
         $paySystem = $payment->getPaySystem();
 
         if ($paySystem->isCash()) {
-            return Payment::createCash(round($payment->getSum(), 2));
+            return new Payment(Payment::TYPE_CASH, round($payment->getSum(), 2));
         }
-        return Payment::createCard(round($payment->getSum(), 2));
+        return new Payment(Payment::TYPE_CARD, round($payment->getSum(), 2));
     }
 
     public function printCheck($order) {
