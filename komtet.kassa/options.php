@@ -3,7 +3,7 @@ $moduleId = 'komtet.kassa';
 
 use Bitrix\Main\Loader,
     Bitrix\Main\Localization\Loc;
-use Komtet\KassaSdk\Check;
+use Komtet\KassaSdk\TaxSystem;
 
 if (!$USER->IsAdmin()) {
     return;
@@ -102,12 +102,12 @@ $form->AddDropDownField(
     GetMessage('KOMTETKASSA_OPTIONS_TAX_SYSTEM'),
     true,
     array(
-        Check::TS_COMMON => GetMessage('KOMTETKASSA_OPTIONS_TS_COMMON'),
-        Check::TS_SIMPLIFIED_IN => GetMessage('KOMTETKASSA_OPTIONS_TS_SIMPLIFIED_IN'),
-        Check::TS_SIMPLIFIED_IN_OUT => GetMessage('KOMTETKASSA_OPTIONS_TS_SIMPLIFIED_IN_OUT'),
-        Check::TS_UTOII => GetMessage('KOMTETKASSA_OPTIONS_TS_UTOII'),
-        Check::TS_UST => GetMessage('KOMTETKASSA_OPTIONS_TS_UST'),
-        Check::TS_PATENT => GetMessage('KOMTETKASSA_OPTIONS_TS_PATENT')
+        TaxSystem::COMMON => GetMessage('KOMTETKASSA_OPTIONS_TS_COMMON'),
+        TaxSystem::SIMPLIFIED_IN => GetMessage('KOMTETKASSA_OPTIONS_TS_SIMPLIFIED_IN'),
+        TaxSystem::SIMPLIFIED_IN_OUT => GetMessage('KOMTETKASSA_OPTIONS_TS_SIMPLIFIED_IN_OUT'),
+        TaxSystem::UTOII => GetMessage('KOMTETKASSA_OPTIONS_TS_UTOII'),
+        TaxSystem::UST => GetMessage('KOMTETKASSA_OPTIONS_TS_UST'),
+        TaxSystem::PATENT => GetMessage('KOMTETKASSA_OPTIONS_TS_PATENT')
     ),
     COption::GetOptionString($moduleId, 'tax_system')
 );

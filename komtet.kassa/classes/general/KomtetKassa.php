@@ -5,6 +5,7 @@ use Komtet\KassaSdk\Check;
 use Komtet\KassaSdk\Client;
 use Komtet\KassaSdk\Payment;
 use Komtet\KassaSdk\Position;
+use Komtet\KassaSdk\TaxSystem;
 use Komtet\KassaSdk\QueueManager;
 use Komtet\KassaSdk\Vat;
 use Bitrix\Main\UserTable;
@@ -147,7 +148,7 @@ class KomtetKassaOld extends KomtetKassaBase
         );
 
         while ($item = $dbBasket->GetNext()) {
-            if ($this->taxSystem == Check::TS_COMMON) {
+            if ($this->taxSystem == TaxSystem::COMMON) {
                 $itemVatRate = round(floatval($item['VAT_RATE']) * 100, 2);
             } else {
                 $itemVatRate = Vat::RATE_NO;
@@ -164,9 +165,6 @@ class KomtetKassaOld extends KomtetKassaBase
 
             if ($item['MEASURE_NAME']) {
                 $check_position->setMeasureName(mb_convert_encoding($item['MEASURE_NAME'], 'UTF-8', LANG_CHARSET));
-            }
-            else {
-                $check_position->setMeasureName("");
             }
 
             $check->addPosition($check_position);
@@ -252,7 +250,7 @@ class KomtetKassaD7 extends KomtetKassaBase {
 
         $positions = $order->getBasket();
         foreach ($positions as $position) {
-            if ($this->taxSystem == Check::TS_COMMON) {
+            if ($this->taxSystem == TaxSystem::COMMON) {
                 $itemVatRate = round(floatval($position->getField('VAT_RATE')) * 100, 2);
             } else {
                 $itemVatRate = Vat::RATE_NO;
@@ -269,8 +267,14 @@ class KomtetKassaD7 extends KomtetKassaBase {
             if ($position->getField('MEASURE_NAME')) {
                 $check_position->setMeasureName(mb_convert_encoding($position->getField('MEASURE_NAME'), 'UTF-8', LANG_CHARSET));
             }
+
+            if (strpos($position->getField('PRODUCT_XML_ID'), '#') !== false) { // subproduct
+                $catalog_product = CCatalogProduct::GetByIDEx($position->getField('PRODUCT_ID'));
+                $product = CCatalogProduct::GetByIDEx($catalog_product['PROPERTIES']['CML2_LINK']['VALUE']);
+                $check_position->setId($product['XML_ID']);
+            }
             else {
-                $check_position->setMeasureName("");
+                $check_position->setId($position->getField('PRODUCT_XML_ID'));
             }
 
             $check->addPosition($check_position);
