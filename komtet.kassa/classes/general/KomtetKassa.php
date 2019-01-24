@@ -5,9 +5,9 @@ use Komtet\KassaSdk\Check;
 use Komtet\KassaSdk\Client;
 use Komtet\KassaSdk\Payment;
 use Komtet\KassaSdk\Position;
+use Komtet\KassaSdk\TaxSystem;
 use Komtet\KassaSdk\QueueManager;
 use Komtet\KassaSdk\Vat;
-
 use Bitrix\Main\UserTable;
 
 
@@ -120,11 +120,11 @@ class KomtetKassaOld extends KomtetKassaBase
             while ($pAction = $resPaySystemAction->Fetch()) {
                 $arPath = explode('/', $pAction['ACTION_FILE']);
                 if (end($arPath) == 'cash') {
-                    return Payment::createCash(round($sum, 2));
+                    return new Payment(Payment::TYPE_CASH, round($sum, 2));
                 }
             }
         }
-        return Payment::createCard(round($sum, 2));
+        return new Payment(Payment::TYPE_CARD, round($sum, 2));
     }
 
     public function printCheck($orderID) {
@@ -148,20 +148,26 @@ class KomtetKassaOld extends KomtetKassaBase
         );
 
         while ($item = $dbBasket->GetNext()) {
-            if ($this->taxSystem == Check::TS_COMMON) {
-                $itemVatRate = round(floatval($item['VAT_RATE']), 2);
+            if ($this->taxSystem == TaxSystem::COMMON) {
+                $itemVatRate = round(floatval($item['VAT_RATE']) * 100, 2);
             } else {
                 $itemVatRate = Vat::RATE_NO;
             }
 
-            $check->addPosition(new Position(
+            $check_position = new Position(
                 mb_convert_encoding($item['NAME'], 'UTF-8', LANG_CHARSET),
                 round($item['PRICE'], 2),
                 floatval($item['QUANTITY']),
                 round(($item['PRICE'] - $item['DISCOUNT_PRICE']) * $item['QUANTITY'], 2),
                 floatval($item['DISCOUNT_PRICE']),
                 new Vat($itemVatRate)
-            ));
+            );
+
+            if ($item['MEASURE_NAME']) {
+                $check_position->setMeasureName(mb_convert_encoding($item['MEASURE_NAME'], 'UTF-8', LANG_CHARSET));
+            }
+
+            $check->addPosition($check_position);
         }
 
         $deliveryPrice = round($order['PRICE_DELIVERY'], 2);
@@ -192,13 +198,12 @@ class KomtetKassaD7 extends KomtetKassaBase {
         $paySystem = $payment->getPaySystem();
 
         if ($paySystem->isCash()) {
-            return Payment::createCash(round($payment->getSum(), 2));
+            return new Payment(Payment::TYPE_CASH, round($payment->getSum(), 2));
         }
-        return Payment::createCard(round($payment->getSum(), 2));
+        return new Payment(Payment::TYPE_CARD, round($payment->getSum(), 2));
     }
 
     public function printCheck($order) {
-
         $propertyCollection = $order->getPropertyCollection();
         $userEmail = $propertyCollection->getUserEmail();
         if ($userEmail) {
@@ -213,7 +218,7 @@ class KomtetKassaD7 extends KomtetKassaBase {
             }
         }
 
-        // get email from order user
+        // take email from order user
         if (!$userEmail) {
             $userId = $order->getUserId();
             $rsUser = UserTable::getById($userId);
@@ -245,20 +250,34 @@ class KomtetKassaD7 extends KomtetKassaBase {
 
         $positions = $order->getBasket();
         foreach ($positions as $position) {
-            if ($this->taxSystem == Check::TS_COMMON) {
-                $itemVatRate = round(floatval($position->getField('VAT_RATE')), 2);
+            if ($this->taxSystem == TaxSystem::COMMON) {
+                $itemVatRate = round(floatval($position->getField('VAT_RATE')) * 100, 2);
             } else {
                 $itemVatRate = Vat::RATE_NO;
             }
 
-            $check->addPosition(new Position(
+            $check_position = new Position(
                 mb_convert_encoding($position->getField('NAME'), 'UTF-8', LANG_CHARSET),
                 round($position->getPrice(), 2),
                 $position->getQuantity(),
                 round($position->getFinalPrice(), 2),
                 0.0,
                 new Vat($itemVatRate)
-            ));
+            );
+            if ($position->getField('MEASURE_NAME')) {
+                $check_position->setMeasureName(mb_convert_encoding($position->getField('MEASURE_NAME'), 'UTF-8', LANG_CHARSET));
+            }
+
+            if (strpos($position->getField('PRODUCT_XML_ID'), '#') !== false) { // subproduct
+                $catalog_product = CCatalogProduct::GetByIDEx($position->getField('PRODUCT_ID'));
+                $product = CCatalogProduct::GetByIDEx($catalog_product['PROPERTIES']['CML2_LINK']['VALUE']);
+                $check_position->setId($product['XML_ID']);
+            }
+            else {
+                $check_position->setId($position->getField('PRODUCT_XML_ID'));
+            }
+
+            $check->addPosition($check_position);
         }
 
         $shipmentCollection = $order->getShipmentCollection();
