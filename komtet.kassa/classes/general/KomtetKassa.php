@@ -179,7 +179,7 @@ class KomtetKassaOld extends KomtetKassaBase
                 1,
                 $deliveryPrice,
                 0.0,
-                new Vat(0, Vat::RATE_NO)));
+                new Vat(Vat::RATE_NO)));
         }
 
         try {
@@ -282,6 +282,12 @@ class KomtetKassaD7 extends KomtetKassaBase {
 
         $shipmentCollection = $order->getShipmentCollection();
         foreach ($shipmentCollection as $shipment) {
+            // Rates: 0, 0.2, 0.18, ...
+            $shipmentVatRate = $shipment->getVatRate();
+            if ($shipmentVatRate > 0) {
+                $shipmentVatRate = number_format($shipmentVatRate, 2, '.', '');
+            }
+
             if ($shipment->getPrice() > 0.0) {
                 $check->addPosition(new Position(
                     mb_convert_encoding($shipment->getField('DELIVERY_NAME'), 'UTF-8', LANG_CHARSET),
@@ -289,7 +295,7 @@ class KomtetKassaD7 extends KomtetKassaBase {
                     1,
                     round($shipment->getPrice(), 2),
                     0.0,
-                    new Vat(0, Vat::RATE_NO)));
+                    new Vat($shipmentVatRate)));
             }
         }
 
