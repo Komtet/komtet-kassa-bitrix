@@ -179,7 +179,7 @@ class KomtetKassaOld extends KomtetKassaBase
                 1,
                 $deliveryPrice,
                 0.0,
-                new Vat(0, Vat::RATE_NO)));
+                new Vat(Vat::RATE_NO)));
         }
 
         try {
@@ -289,7 +289,7 @@ class KomtetKassaD7 extends KomtetKassaBase {
                     1,
                     round($shipment->getPrice(), 2),
                     0.0,
-                    new Vat(0, Vat::RATE_NO)));
+                    new Vat($shipment->getVatRate())));
             }
         }
 
