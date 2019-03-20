@@ -235,9 +235,8 @@ class KomtetKassaD7 extends KomtetKassaBase {
         foreach ($paymentCollection as $payment) {
             if($payment->isInner()) {
                 $innerBillPayments[] = $payment;
-            };
-
-            if ($payment->isInner() or ($this->paySystems and !in_array($payment->getPaymentSystemId(), $this->paySystems))) {
+                continue;
+            } elseif ($this->paySystems and !in_array($payment->getPaymentSystemId(), $this->paySystems)) {
                 continue;
             }
 
