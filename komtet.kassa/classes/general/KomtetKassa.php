@@ -230,9 +230,14 @@ class KomtetKassaD7 extends KomtetKassaBase {
         $check->setShouldPrint($this->shouldPrint);
 
         $payments = array();
+        $innerBillPayments = array();
         $paymentCollection = $order->getPaymentCollection();
         foreach ($paymentCollection as $payment) {
-            if ($this->paySystems and !in_array($payment->getPaymentSystemId(), $this->paySystems)) {
+            if($payment->isInner()) {
+                $innerBillPayments[] = $payment;
+            };
+
+            if ($payment->isInner() or ($this->paySystems and !in_array($payment->getPaymentSystemId(), $this->paySystems))) {
                 continue;
             }
 
@@ -278,6 +283,10 @@ class KomtetKassaD7 extends KomtetKassaBase {
             }
 
             $check->addPosition($check_position);
+        }
+
+        foreach ($innerBillPayments as $innerBillPayment) {
+            $check->applyDiscount(round($innerBillPayment->getSum(), 2));
         }
 
         $shipmentCollection = $order->getShipmentCollection();
