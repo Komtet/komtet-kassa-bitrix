@@ -179,7 +179,7 @@ class KomtetKassaOld extends KomtetKassaBase
                 1,
                 $deliveryPrice,
                 0.0,
-                new Vat(0, Vat::RATE_NO)));
+                new Vat(Vat::RATE_NO)));
         }
 
         try {
@@ -230,9 +230,13 @@ class KomtetKassaD7 extends KomtetKassaBase {
         $check->setShouldPrint($this->shouldPrint);
 
         $payments = array();
+        $innerBillPayments = array();
         $paymentCollection = $order->getPaymentCollection();
         foreach ($paymentCollection as $payment) {
-            if ($this->paySystems and !in_array($payment->getPaymentSystemId(), $this->paySystems)) {
+            if($payment->isInner()) {
+                $innerBillPayments[] = $payment;
+                continue;
+            } elseif ($this->paySystems and !in_array($payment->getPaymentSystemId(), $this->paySystems)) {
                 continue;
             }
 
@@ -280,6 +284,10 @@ class KomtetKassaD7 extends KomtetKassaBase {
             $check->addPosition($check_position);
         }
 
+        foreach ($innerBillPayments as $innerBillPayment) {
+            $check->applyDiscount(round($innerBillPayment->getSum(), 2));
+        }
+
         $shipmentCollection = $order->getShipmentCollection();
         foreach ($shipmentCollection as $shipment) {
             if ($shipment->getPrice() > 0.0) {
@@ -289,7 +297,7 @@ class KomtetKassaD7 extends KomtetKassaBase {
                     1,
                     round($shipment->getPrice(), 2),
                     0.0,
-                    new Vat(0, Vat::RATE_NO)));
+                    new Vat($shipment->getVatRate())));
             }
         }
 
