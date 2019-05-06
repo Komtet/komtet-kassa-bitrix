@@ -255,7 +255,7 @@ class KomtetKassaD7 extends KomtetKassaBase {
         $positions = $order->getBasket();
         foreach ($positions as $position) {
             if ($this->taxSystem == TaxSystem::COMMON) {
-                $itemVatRate = round(floatval($position->getField('VAT_RATE')) * 100, 2);
+                $itemVatRate = round(floatval($position->getField('VAT_RATE')), 2);
             } else {
                 $itemVatRate = Vat::RATE_NO;
             }
