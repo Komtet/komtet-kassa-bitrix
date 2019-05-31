@@ -255,7 +255,7 @@ class KomtetKassaD7 extends KomtetKassaBase {
         $positions = $order->getBasket();
         foreach ($positions as $position) {
             if ($this->taxSystem == TaxSystem::COMMON) {
-                $itemVatRate = round(floatval($position->getField('VAT_RATE')), 2);
+                $itemVatRate = floatval($position->getField('VAT_RATE'));
             } else {
                 $itemVatRate = Vat::RATE_NO;
             }
@@ -291,13 +291,20 @@ class KomtetKassaD7 extends KomtetKassaBase {
         $shipmentCollection = $order->getShipmentCollection();
         foreach ($shipmentCollection as $shipment) {
             if ($shipment->getPrice() > 0.0) {
+
+                if ($this->taxSystem == TaxSystem::COMMON) {
+                    $shipmentVatRate = floatval($shipment->getVatRate());
+                } else {
+                    $shipmentVatRate = Vat::RATE_NO;
+                }
+
                 $check->addPosition(new Position(
                     mb_convert_encoding($shipment->getField('DELIVERY_NAME'), 'UTF-8', LANG_CHARSET),
                     round($shipment->getPrice(), 2),
                     1,
                     round($shipment->getPrice(), 2),
                     0.0,
-                    new Vat($shipment->getVatRate())));
+                    new Vat($shipmentVatRate)));
             }
         }
 
