@@ -292,7 +292,7 @@ class KomtetKassaD7 extends KomtetKassaBase {
         foreach ($shipmentCollection as $shipment) {
             if ($shipment->getPrice() > 0.0) {
 
-                if ($this->taxSystem == TaxSystem::COMMON) {
+                if ($this->taxSystem == TaxSystem::COMMON && var_dump(method_exists($shipment, 'getVatRate'))) {
                     $shipmentVatRate = floatval($shipment->getVatRate());
                 } else {
                     $shipmentVatRate = Vat::RATE_NO;
