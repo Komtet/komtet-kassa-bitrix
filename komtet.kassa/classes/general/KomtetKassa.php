@@ -34,8 +34,7 @@ class KomtetKassa
     public static function newHandleSalePayOrder($order)
     {
 
-        if (!gettype($order) == 'object')
-        {
+        if (!gettype($order) == 'object') {
             return;
         }
 
@@ -50,8 +49,7 @@ class KomtetKassa
     public static function newHandleSaleSaveOrder($order)
     {
 
-        if (!gettype($order) == 'object')
-        {
+        if (!gettype($order) == 'object') {
             return;
         }
 
@@ -83,7 +81,8 @@ class KomtetKassaBase
         $this->paySystems = $options['pay_systems'];
     }
 
-    private function getOptions() {
+    private function getOptions()
+    {
         $moduleID = 'komtet.kassa';
         $result = array(
             'key' => COption::GetOptionString($moduleID, 'shop_id'),
@@ -100,13 +99,13 @@ class KomtetKassaBase
         }
         return $result;
     }
-
 }
 
 
 class KomtetKassaOld extends KomtetKassaBase
 {
-    protected function getPayment($paySystemId, $personTypeId, $sum) {
+    protected function getPayment($paySystemId, $personTypeId, $sum)
+    {
         global $DB;
         $strSql = "SELECT * FROM b_sale_pay_system_action WHERE  PAY_SYSTEM_ID = $paySystemId";
         $res = $DB->Query($strSql);
@@ -127,16 +126,19 @@ class KomtetKassaOld extends KomtetKassaBase
         return new Payment(Payment::TYPE_CARD, round($sum, 2));
     }
 
-    public function printCheck($orderID) {
+    public function printCheck($orderID)
+    {
         $order = CSaleOrder::GetByID($orderID);
 
         $user = CUSer::GetByID($order['USER_ID'])->Fetch();
         $check = Check::createSell($orderID, $user['EMAIL'], $this->taxSystem);
         $check->setShouldPrint($this->shouldPrint);
 
-        $checkPayment = $this->getPayment($order['PAY_SYSTEM_ID'],
-                                          $order['PERSON_TYPE_ID'],
-                                          floatval($order['PRICE']));
+        $checkPayment = $this->getPayment(
+            $order['PAY_SYSTEM_ID'],
+            $order['PERSON_TYPE_ID'],
+            floatval($order['PRICE'])
+        );
         $check->addPayment($checkPayment);
 
         $dbBasket = CSaleBasket::GetList(
@@ -179,7 +181,8 @@ class KomtetKassaOld extends KomtetKassaBase
                 1,
                 $deliveryPrice,
                 0.0,
-                new Vat(Vat::RATE_NO)));
+                new Vat(Vat::RATE_NO)
+            ));
         }
 
         try {
@@ -191,9 +194,11 @@ class KomtetKassaOld extends KomtetKassaBase
 }
 
 
-class KomtetKassaD7 extends KomtetKassaBase {
+class KomtetKassaD7 extends KomtetKassaBase
+{
 
-    protected function getPayment($payment) {
+    protected function getPayment($payment)
+    {
 
         $paySystem = $payment->getPaySystem();
 
@@ -203,15 +208,22 @@ class KomtetKassaD7 extends KomtetKassaBase {
         return new Payment(Payment::TYPE_CARD, round($payment->getSum(), 2));
     }
 
-    public function printCheck($order) {
+    public function printCheck($order)
+    {
+        if (KomtetKassaReportsTable::getRow(array(
+            'select' => array('*'),
+            'filter' => array('order_id' => $order->getId())
+        ))) {
+            return;
+        }
+
         $propertyCollection = $order->getPropertyCollection();
         $userEmail = $propertyCollection->getUserEmail();
         if ($userEmail) {
             $userEmail = $userEmail->getValue();
-        }
-        else { // if email field have not flag "is_email"
-            foreach($propertyCollection as $orderProperty) {
-                if($orderProperty->getField('CODE') == 'EMAIL') {
+        } else { // if email field have not flag "is_email"
+            foreach ($propertyCollection as $orderProperty) {
+                if ($orderProperty->getField('CODE') == 'EMAIL') {
                     $userEmail = $orderProperty->getValue();
                     break;
                 }
@@ -233,7 +245,7 @@ class KomtetKassaD7 extends KomtetKassaBase {
         $innerBillPayments = array();
         $paymentCollection = $order->getPaymentCollection();
         foreach ($paymentCollection as $payment) {
-            if($payment->isInner()) {
+            if ($payment->isInner()) {
                 $innerBillPayments[] = $payment;
                 continue;
             } elseif ($this->paySystems and !in_array($payment->getPaymentSystemId(), $this->paySystems)) {
@@ -276,8 +288,7 @@ class KomtetKassaD7 extends KomtetKassaBase {
                 $catalog_product = CCatalogProduct::GetByIDEx($position->getField('PRODUCT_ID'));
                 $product = CCatalogProduct::GetByIDEx($catalog_product['PROPERTIES']['CML2_LINK']['VALUE']);
                 $check_position->setId($product['XML_ID']);
-            }
-            else {
+            } else {
                 $check_position->setId($position->getField('PRODUCT_XML_ID'));
             }
 
@@ -304,7 +315,8 @@ class KomtetKassaD7 extends KomtetKassaBase {
                     1,
                     round($shipment->getPrice(), 2),
                     0.0,
-                    new Vat($shipmentVatRate)));
+                    new Vat($shipmentVatRate)
+                ));
             }
         }
 
@@ -313,5 +325,12 @@ class KomtetKassaD7 extends KomtetKassaBase {
         } catch (SdkException $e) {
             error_log(sprintf('Failed to send check: %s', $e->getMessage()));
         }
+    }
+
+    private function writeLog($text)
+    {
+        $fd = fopen('kassa.log', 'a');
+        fwrite($fd, sprintf('KOMTET Kassa: %s', $text));
+        fclose($fd);
     }
 }
