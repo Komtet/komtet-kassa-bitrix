@@ -326,11 +326,4 @@ class KomtetKassaD7 extends KomtetKassaBase
             error_log(sprintf('Failed to send check: %s', $e->getMessage()));
         }
     }
-
-    private function writeLog($text)
-    {
-        $fd = fopen('kassa.log', 'a');
-        fwrite($fd, sprintf('KOMTET Kassa: %s', $text));
-        fclose($fd);
-    }
 }
