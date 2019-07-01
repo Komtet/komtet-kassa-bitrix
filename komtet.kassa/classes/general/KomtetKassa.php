@@ -210,10 +210,12 @@ class KomtetKassaD7 extends KomtetKassaBase
 
     public function printCheck($order)
     {
-        if (KomtetKassaReportsTable::getRow(array(
-            'select' => array('*'),
-            'filter' => array('order_id' => $order->getId())
-        ))) {
+        if (KomtetKassaReportsTable::getRow(
+            array(
+                'select' => array('*'),
+                'filter' => array('order_id' => $order->getId())
+            )
+        )) {
             return;
         }
 
