@@ -26,7 +26,9 @@ if ($REQUEST_METHOD == 'POST' && check_bitrix_sessid()) {
         'should_print' => 'bool',
         'queue_id' => 'string',
         'tax_system' => 'integer',
-        'pay_systems' => 'array'
+        'pay_systems' => 'array',
+        'full_payment_order_status' => 'string',
+        'prepayment_order_status' => 'string'
     );
     foreach ($data as $key => $type) {
         $value = filter_input(INPUT_POST, strtoupper($key));
@@ -147,6 +149,29 @@ AddMultiSelectField(
     false,
     $arPaySystem,
     json_decode(COption::GetOptionString($moduleId, 'pay_systems'))
+);
+
+$orderStatuses = array(null => "Не выбран");
+$resStatus = CSaleStatus::GetList($arOrder = Array("SORT"=>"ASC", "NAME"=>"ASC"));
+while ($stype = $resStatus->Fetch()) {
+    $orderStatuses[$stype["ID"]] = $stype["NAME"];
+}
+
+$form->AddDropDownField(
+    'FULL_PAYMENT_ORDER_STATUS',
+    GetMessage('KOMTETKASSA_OPTIONS_FULL_PAYMENT_ORDER_STATUS'),
+    false,
+    $orderStatuses,
+    COption::GetOptionString($moduleId, 'full_payment_order_status')
+);
+
+$orderStatuses["komtet_kassa_do_not_fiscalize"] = "Не выдавать";
+$form->AddDropDownField(
+    'PREPAYMENT_ORDER_STATUS',
+    GetMessage('KOMTETKASSA_OPTIONS_PREPAYMENT_ORDER_STATUS'),
+    false,
+    $orderStatuses,
+    COption::GetOptionString($moduleId, 'prepayment_order_status')
 );
 
 $form->Buttons(array(
