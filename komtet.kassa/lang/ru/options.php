@@ -1,8 +1,8 @@
 <?php
-$MESS['KOMTETKASSA_OPTIONS_SHOP_ID'] = 'Идентификатор магазина';
-$MESS['KOMTETKASSA_OPTIONS_SECRET_KEY'] = 'Секретный ключ';
+$MESS['KOMTETKASSA_OPTIONS_SHOP_ID'] = 'ID магазина';
+$MESS['KOMTETKASSA_OPTIONS_SECRET_KEY'] = 'Секретный ключ магазина';
 $MESS['KOMTETKASSA_OPTIONS_SHOULD_PRINT'] = 'Печатать чек';
-$MESS['KOMTETKASSA_OPTIONS_QUEUE_ID'] = 'Идентификатор очереди';
+$MESS['KOMTETKASSA_OPTIONS_QUEUE_ID'] = 'ID очереди';
 $MESS['KOMTETKASSA_OPTIONS_TAX_SYSTEM'] = 'Система налогооблажения';
 $MESS['KOMTETKASSA_OPTIONS_PAY_SYSTEMS'] = 'Платежные системы';
 
