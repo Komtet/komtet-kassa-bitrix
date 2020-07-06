@@ -14,3 +14,5 @@ $MESS['KOMTETKASSA_OPTIONS_TS_SIMPLIFIED_IN_OUT'] = 'УСН доход - рас�
 $MESS['KOMTETKASSA_OPTIONS_TS_UTOII'] = 'ЕНВД';
 $MESS['KOMTETKASSA_OPTIONS_TS_UST'] = 'ЕСН';
 $MESS['KOMTETKASSA_OPTIONS_TS_PATENT'] = 'Патент';
+$MESS['KOMTETKASSA_OPTIONS_FULL_PAYMENT_ORDER_STATUS'] = 'Статус заказа для полной оплаты';
+$MESS['KOMTETKASSA_OPTIONS_PREPAYMENT_ORDER_STATUS'] = 'Статус заказа для предоплаты';
