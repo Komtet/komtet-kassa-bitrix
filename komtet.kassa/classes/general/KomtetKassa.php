@@ -113,7 +113,7 @@ class KomtetKassaBase
         // 2 checks way
         else {
             // prepayment
-            if ($orderStatus == $this->prepaymentOrderStatus) {
+            if ($orderStatus == $this->prepaymentOrderStatus && $orderPaid) {
 
                 $calculationMethod = CalculationMethod::PRE_PAYMENT_FULL;
                 $calculationSubject = CalculationSubject::PAYMENT;
@@ -154,13 +154,8 @@ class KomtetKassaOld extends KomtetKassaBase
                 $arPath = explode('/', $pAction['ACTION_FILE']);
                 if (end($arPath) == 'cash') {
 
-                    // так и должно быть
-                    if ($isFullPayment) {
-                        $type = Payment::TYPE_PREPAYMENT;
-                    }
-                    else {
-                        $type = Payment::TYPE_CASH;
-                    }
+                    // если FullPayment, то ставится prepayment - закрытие предоплаты
+                    $type = ($isFullPayment) ? Payment::TYPE_PREPAYMENT : Payment::TYPE_CASH;
 
                     return new Payment($type, round($sum, 2));
                 }
@@ -218,7 +213,6 @@ class KomtetKassaOld extends KomtetKassaBase
                 round($item['PRICE'], 2),
                 floatval($item['QUANTITY']),
                 round(($item['PRICE'] - $item['DISCOUNT_PRICE']) * $item['QUANTITY'], 2),
-                floatval($item['DISCOUNT_PRICE']),
                 new Vat($itemVatRate)
             );
 
@@ -241,7 +235,6 @@ class KomtetKassaOld extends KomtetKassaBase
                 $deliveryPrice,
                 1,
                 $deliveryPrice,
-                0.0,
                 new Vat(Vat::RATE_NO)
             );
 
@@ -280,13 +273,9 @@ class KomtetKassaD7 extends KomtetKassaBase
             return new Payment($type, round($payment->getSum(), 2));
         }
 
-        // так и должно быть
-        if ($isFullPayment) {
-            $type = Payment::TYPE_PREPAYMENT;
-        }
-        else {
-            $type = Payment::TYPE_CARD;
-        }
+        // если FullPayment, то ставится prepayment - закрытие предоплаты
+        $type = ($isFullPayment) ? Payment::TYPE_PREPAYMENT : Payment::TYPE_CASH;
+
         return new Payment($type, round($payment->getSum(), 2));
     }
 
