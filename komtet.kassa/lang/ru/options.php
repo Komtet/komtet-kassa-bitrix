@@ -5,6 +5,8 @@ $MESS['KOMTETKASSA_OPTIONS_SHOULD_PRINT'] = 'Печатать чек';
 $MESS['KOMTETKASSA_OPTIONS_QUEUE_ID'] = 'ID очереди';
 $MESS['KOMTETKASSA_OPTIONS_TAX_SYSTEM'] = 'Система налогооблажения';
 $MESS['KOMTETKASSA_OPTIONS_PAY_SYSTEMS'] = 'Платежные системы';
+$MESS['KOMTETKASSA_OPTIONS_FULL_PAYMENT_ORDER_STATUS'] = 'Статус заказа для полной оплаты';
+$MESS['KOMTETKASSA_OPTIONS_PREPAYMENT_ORDER_STATUS'] = 'Статус заказа для предоплаты';
 
 $MESS['KOMTETKASSA_OPTIONS_TS_COMMON'] = 'ОСН';
 $MESS['KOMTETKASSA_OPTIONS_TS_SIMPLIFIED_IN'] = 'УСН доход';
@@ -12,3 +14,5 @@ $MESS['KOMTETKASSA_OPTIONS_TS_SIMPLIFIED_IN_OUT'] = 'УСН доход - рас�
 $MESS['KOMTETKASSA_OPTIONS_TS_UTOII'] = 'ЕНВД';
 $MESS['KOMTETKASSA_OPTIONS_TS_UST'] = 'ЕСН';
 $MESS['KOMTETKASSA_OPTIONS_TS_PATENT'] = 'Патент';
+$MESS['KOMTETKASSA_OPTIONS_FULL_PAYMENT_ORDER_STATUS'] = 'Статус заказа для полной оплаты';
+$MESS['KOMTETKASSA_OPTIONS_PREPAYMENT_ORDER_STATUS'] = 'Статус заказа для предоплаты';
