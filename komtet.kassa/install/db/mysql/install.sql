@@ -2,7 +2,7 @@ create table if not exists komtet_kassa_reports
 (
     id int not null auto_increment,
     order_id int not null,
-    state tinyint default 0,
+    state varchar(120),
     error_description varchar(255) not null default '',
     primary key (id)
 )
