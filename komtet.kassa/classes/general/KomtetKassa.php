@@ -98,7 +98,7 @@ class KomtetKassaBase
         return $result;
     }
 
-    private function getPaymentProps($orderStatus, $orderPaid)
+    protected function getPaymentProps($orderStatus, $orderExistingStatus, $orderPaid)
     {
         if (!$orderPaid) {
             return array(
@@ -117,7 +117,7 @@ class KomtetKassaBase
             );
         }
         // 2 checks way
-        else {
+        else if ($this->prepaymentOrderStatus) {
             // prepayment
             if ($orderStatus == $this->prepaymentOrderStatus) {
                 return array(
@@ -127,7 +127,10 @@ class KomtetKassaBase
                 );
             }
             // full payment
-            else if ($orderStatus == $this->fullPaymentOrderStatus) {
+            else if ($orderStatus == $this->fullPaymentOrderStatus &&
+                     ($orderExistingStatus == CalculationMethod::PRE_PAYMENT_FULL ||
+                      $orderExistingStatus == CalculationMethod::PRE_PAYMENT_FULL.":done")
+                ) {
                 return array(
                     'calculationMethod' => CalculationMethod::FULL_PAYMENT,
                     'calculationSubject' => CalculationSubject::PRODUCT,
@@ -135,6 +138,13 @@ class KomtetKassaBase
                 );
             }
         }
+
+        return array(
+            'calculationMethod' => null,
+            'calculationSubject' => null,
+            'isFullPayment' => null
+        );
+
     }
 }
 
@@ -176,11 +186,11 @@ class KomtetKassaOld extends KomtetKassaBase
         $order = CSaleOrder::GetByID($orderID);
 
         $paymentProps = $this->getPaymentProps($order['STATUS_ID'], true);
-        if ($paymentProps['isFullPayment'] == null) {
+        if ($paymentProps['calculationMethod'] == null) {
             return;
         }
 
-        $user = CUSer::GetByID($order['USER_ID'])->Fetch();
+        $user = CUser::GetByID($order['USER_ID'])->Fetch();
         $check = Check::createSell($orderID, $user['EMAIL'], $this->taxSystem);
         $check->setShouldPrint($this->shouldPrint);
 
@@ -275,8 +285,25 @@ class KomtetKassaD7 extends KomtetKassaBase
 
     public function printCheck($order)
     {
-        $paymentProps = $this->getPaymentProps($order->getField('STATUS_ID'), $order->isPaid());
-        if ($paymentProps['isFullPayment'] == null) {
+
+        $existingRow = KomtetKassaReportsTable::getRow(
+            array(
+                'select' => array('*'),
+                'filter' => array('order_id' => $order->getId()),
+                'order' => array('id' => 'desc')
+            )
+        );
+
+        if ($existingRow['state'] == CalculationMethod::FULL_PAYMENT ||
+            $existingRow['state'] == CalculationMethod::FULL_PAYMENT.":done" ||
+            $existingRow['state'] == "done"
+        ) {
+            return;
+        }
+
+        $paymentProps = $this->getPaymentProps($order->getField('STATUS_ID'), $existingRow['state'], $order->isPaid());
+
+        if ($paymentProps['calculationMethod'] === null) {
             return;
         }
 
@@ -388,6 +415,13 @@ class KomtetKassaD7 extends KomtetKassaBase
         }
 
         try {
+
+            KomtetKassaReportsTable::add([
+                'order_id' => $order->getId(),
+                'state' => $paymentProps['calculationMethod'],
+                'error_description' => '']
+            );
+
             $this->manager->putCheck($check);
         } catch (SdkException $e) {
             error_log(sprintf('Failed to send check: %s', $e->getMessage()));
