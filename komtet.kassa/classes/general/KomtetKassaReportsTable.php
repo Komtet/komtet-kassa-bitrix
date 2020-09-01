@@ -21,7 +21,7 @@ class KomtetKassaReportsTable extends Entity\DataManager
                 'required' => true,
                 'column_name' => 'order_id'
             )),
-            new Entity\IntegerField('state', array(
+            new Entity\StringField('state', array(
                 'required' => true,
                 'column_name' => 'state'
             )),
