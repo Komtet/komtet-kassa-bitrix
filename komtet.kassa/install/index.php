@@ -43,7 +43,7 @@ class komtet_kassa extends CModule
         }
         else {
             RegisterModuleDependences('sale', 'OnSaleStatusOrderChange', $this->MODULE_ID, 'KomtetKassa', 'newHandleSalePayOrder');
-            // RegisterModuleDependences('sale', 'OnSaleOrderSaved', $this->MODULE_ID, 'KomtetKassa', 'newHandleSaleSaveOrder');
+            RegisterModuleDependences('sale', 'OnSaleOrderSaved', $this->MODULE_ID, 'KomtetKassa', 'newHandleSaleSaveOrder');
         }
 
         return true;
@@ -76,7 +76,7 @@ class komtet_kassa extends CModule
     {
         COption::RemoveOption($this->MODULE_ID);
         UnRegisterModuleDependences("sale", "OnSalePayOrder", $this->MODULE_ID, "KomtetKassa", "handleSalePayOrder");
-        // UnRegisterModuleDependences('sale', 'OnSaleOrderSaved', $this->MODULE_ID, 'KomtetKassa', 'newHandleSaleSaveOrder');
+        UnRegisterModuleDependences('sale', 'OnSaleOrderSaved', $this->MODULE_ID, 'KomtetKassa', 'newHandleSaleSaveOrder');
 
         UnRegisterModuleDependences("sale", "OnSaleStatusOrderChange", $this->MODULE_ID, "KomtetKassa", "newHandleSalePayOrder");
 
