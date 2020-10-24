@@ -5,6 +5,7 @@ use Komtet\KassaSdk\CalculationMethod;
 use Komtet\KassaSdk\CalculationSubject;
 use Komtet\KassaSdk\Check;
 use Komtet\KassaSdk\Client;
+use Komtet\KassaSdk\Nomenclature;
 use Komtet\KassaSdk\Payment;
 use Komtet\KassaSdk\Position;
 use Komtet\KassaSdk\TaxSystem;
@@ -144,8 +145,49 @@ class KomtetKassaBase
             'calculationSubject' => null,
             'isFullPayment' => null
         );
-
     }
+
+    protected function generatePosition($position, $quantity = 1)
+    {
+        /**
+         * Получени позиции заказа
+         * @param array $position Позицияв заказе Bitrix
+         * @param int|float $quantity Количествово товара в позиции
+         */
+
+        $itemVatRate = Vat::RATE_NO;
+        if ($this->taxSystem == TaxSystem::COMMON) {
+            $itemVatRate = floatval($position->getField('VAT_RATE'));
+        }
+
+        return new Position(
+            mb_convert_encoding($position->getField('NAME'), 'UTF-8', LANG_CHARSET),
+            round($position->getPrice(), 2),
+            $quantity,
+            round($position->getPrice()*$quantity, 2),
+            new Vat($itemVatRate),
+            mb_convert_encoding($position->getField('MEASURE_NAME'), 'UTF-8', LANG_CHARSET)
+        );
+    }
+
+    public function getNomenclatureCodes($position_id)
+    {
+        /**
+         * Получени списка маркировок
+         * @param int $position_id Идентификатор позиции в заказе
+         */
+        global $DB;
+
+        $strSql = "SELECT MARKING_CODE FROM b_sale_store_barcode WHERE MARKING_CODE != '' AND BASKET_ID = " . $position_id;
+        $dbRes = $DB->Query($strSql, false);
+
+        $nomenclature_codes = [];
+        while ($nomenclature_code = $dbRes->Fetch()) {
+            array_push($nomenclature_codes, $nomenclature_code['MARKING_CODE']);
+        }
+        return $nomenclature_codes;
+    }
+
 }
 
 
@@ -154,7 +196,7 @@ class KomtetKassaOld extends KomtetKassaBase
     protected function getPayment($paySystemId, $personTypeId, $sum, $isFullPayment)
     {
         global $DB;
-        $strSql = "SELECT * FROM b_sale_pay_system_action WHERE  PAY_SYSTEM_ID = $paySystemId";
+        $strSql = "SELECT * FROM b_sale_pay_system_action WHERE PAY_SYSTEM_ID = $paySystemId";
         $res = $DB->Query($strSql);
 
         while ($pAction = $res->Fetch()) {
@@ -355,35 +397,30 @@ class KomtetKassaD7 extends KomtetKassaBase
         }
 
         $positions = $order->getBasket();
+
         foreach ($positions as $position) {
-            if ($this->taxSystem == TaxSystem::COMMON) {
-                $itemVatRate = floatval($position->getField('VAT_RATE'));
+            if ($position->getField('MARKING_CODE_GROUP')) {
+                $positionID = $position->getField('ID');
+                $nomenclature_codes = $this->getNomenclatureCodes($positionID);
+
+                if (count($nomenclature_codes) < $position->getQuantity()) {
+                    KomtetKassaReportsTable::add([
+                        'order_id' => $order->getId(),
+                        'state' => $paymentProps['calculationMethod'].":error",
+                        'error_description' => "Маркировки заданы не у всех товаров"]
+                    );
+                    return;
+                }
+
+                for ($item = 0; $item < $position->getQuantity(); $item++) {
+                    $marked_position = $this->generatePosition($position);
+                    $nomenclature_code = array_shift($nomenclature_codes);
+                    $marked_position->setNomenclature(new Nomenclature($nomenclature_code));
+                    $check->addPosition($marked_position);
+                }
             } else {
-                $itemVatRate = Vat::RATE_NO;
+                $check->addPosition($this->generatePosition($position, $position->getQuantity()));
             }
-
-            $checkPosition = new Position(
-                mb_convert_encoding($position->getField('NAME'), 'UTF-8', LANG_CHARSET),
-                round($position->getPrice(), 2),
-                $position->getQuantity(),
-                round($position->getFinalPrice(), 2),
-                new Vat($itemVatRate)
-            );
-            if ($position->getField('MEASURE_NAME')) {
-                $checkPosition->setMeasureName(mb_convert_encoding($position->getField('MEASURE_NAME'), 'UTF-8', LANG_CHARSET));
-            }
-
-            if (strpos($position->getField('PRODUCT_XML_ID'), '#') !== false) { // subproduct
-                $catalog_product = CCatalogProduct::GetByIDEx($position->getField('PRODUCT_ID'));
-                $product = CCatalogProduct::GetByIDEx($catalog_product['PROPERTIES']['CML2_LINK']['VALUE']);
-                $checkPosition->setId($product['XML_ID']);
-            } else {
-                $checkPosition->setId($position->getField('PRODUCT_XML_ID'));
-            }
-            $checkPosition->setCalculationMethod($paymentProps['calculationMethod']);
-            $checkPosition->setCalculationSubject($paymentProps['calculationSubject']);
-
-            $check->addPosition($checkPosition);
         }
 
         foreach ($innerBillPayments as $innerBillPayment) {
@@ -392,6 +429,7 @@ class KomtetKassaD7 extends KomtetKassaBase
 
         $shipmentCollection = $order->getShipmentCollection();
         foreach ($shipmentCollection as $shipment) {
+
             if ($shipment->getPrice() > 0.0) {
 
                 if ($this->taxSystem == TaxSystem::COMMON && method_exists($shipment, 'getVatRate')) {
@@ -424,7 +462,21 @@ class KomtetKassaD7 extends KomtetKassaBase
 
             $this->manager->putCheck($check);
         } catch (SdkException $e) {
+
+            KomtetKassaReportsTable::add([
+                'order_id' => $order->getId(),
+                'state' => $paymentProps['calculationMethod'].":error",
+                'error_description' => $e->getMessage()." ".$e->getDescription()]
+            );
             error_log(sprintf('Failed to send check: %s', $e->getMessage()));
+
+            return;
         }
+
+        KomtetKassaReportsTable::add([
+            'order_id' => $order->getId(),
+            'state' => $paymentProps['calculationMethod'].":done",
+            'error_description' => '']
+        );
     }
 }
