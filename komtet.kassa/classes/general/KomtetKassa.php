@@ -80,6 +80,10 @@ class KomtetKassaBase
 
     private function getOptions()
     {
+        /**
+         * Получение настроек плагина
+         */
+
         $moduleID = 'komtet.kassa';
         $result = array(
             'key' => COption::GetOptionString($moduleID, 'shop_id'),
@@ -101,6 +105,13 @@ class KomtetKassaBase
 
     protected function getPaymentProps($orderStatus, $orderExistingStatus, $orderPaid)
     {
+        /**
+         * Получение опций оплаты
+         * @param string $orderStatus новый статус заказа
+         * @param string $orderExistingStatus предыдущий статус заказа
+         * @param bool $orderPaid был ли заказ оплачен
+         */
+
         if (!$orderPaid) {
             return array(
                 'calculationMethod' => null,
