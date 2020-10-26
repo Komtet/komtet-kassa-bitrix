@@ -336,8 +336,13 @@ class KomtetKassaD7 extends KomtetKassaBase
             )
         );
 
-        if ($existingRow['state'] == CalculationMethod::FULL_PAYMENT ||
-            $existingRow['state'] == CalculationMethod::FULL_PAYMENT.":done" ||
+        if (
+            ($order->getField('STATUS_ID') == $this->fullPaymentOrderStatus &&
+             ($existingRow['state'] == CalculationMethod::FULL_PAYMENT ||
+              $existingRow['state'] == CalculationMethod::FULL_PAYMENT.":done")) ||
+            ($order->getField('STATUS_ID') == $this->prepaymentOrderStatus &&
+             ($existingRow['state'] == CalculationMethod::PRE_PAYMENT_FULL ||
+              $existingRow['state'] == CalculationMethod::PRE_PAYMENT_FULL.":done")) ||
             $existingRow['state'] == "done"
         ) {
             return;
@@ -348,6 +353,12 @@ class KomtetKassaD7 extends KomtetKassaBase
         if ($paymentProps['calculationMethod'] === null) {
             return;
         }
+
+        KomtetKassaReportsTable::add([
+            'order_id' => $order->getId(),
+            'state' => $paymentProps['calculationMethod'],
+            'error_description' => '']
+        );
 
         $propertyCollection = $order->getPropertyCollection();
         $userEmail = $propertyCollection->getUserEmail();
@@ -403,7 +414,8 @@ class KomtetKassaD7 extends KomtetKassaBase
                 $positionID = $position->getField('ID');
                 $nomenclature_codes = $this->getNomenclatureCodes($positionID);
 
-                if (count($nomenclature_codes) < $position->getQuantity()) {
+                if (count($nomenclature_codes) < $position->getQuantity() &&
+                    $paymentProps['calculationMethod'] == CalculationMethod::FULL_PAYMENT) {
                     KomtetKassaReportsTable::add([
                         'order_id' => $order->getId(),
                         'state' => $paymentProps['calculationMethod'].":error",
@@ -453,26 +465,16 @@ class KomtetKassaD7 extends KomtetKassaBase
         }
 
         try {
-
-            KomtetKassaReportsTable::add([
-                'order_id' => $order->getId(),
-                'state' => $paymentProps['calculationMethod'],
-                'error_description' => '']
-            );
-
             $this->manager->putCheck($check);
         } catch (SdkException $e) {
-
             KomtetKassaReportsTable::add([
                 'order_id' => $order->getId(),
                 'state' => $paymentProps['calculationMethod'].":error",
                 'error_description' => $e->getMessage()." ".$e->getDescription()]
             );
             error_log(sprintf('Failed to send check: %s', $e->getMessage()));
-
             return;
         }
-
         KomtetKassaReportsTable::add([
             'order_id' => $order->getId(),
             'state' => $paymentProps['calculationMethod'].":done",
