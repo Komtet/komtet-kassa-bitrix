@@ -176,8 +176,7 @@ class KomtetKassaBase
             round($position->getPrice(), 2),
             $quantity,
             round($position->getPrice()*$quantity, 2),
-            new Vat($itemVatRate),
-            mb_convert_encoding($position->getField('MEASURE_NAME'), 'UTF-8', LANG_CHARSET)
+            new Vat($itemVatRate)
         );
     }
 
