@@ -81,7 +81,7 @@ class KomtetKassaBase
     private function getOptions()
     {
         /**
-         * РџРѕР»СѓС‡РµРЅРёРµ РЅР°СЃС‚СЂРѕРµРє РїР»Р°РіРёРЅР°
+         * Получение настроек плагина
          */
 
         $moduleID = 'komtet.kassa';
@@ -106,10 +106,10 @@ class KomtetKassaBase
     protected function getPaymentProps($orderStatus, $orderExistingStatus, $orderPaid)
     {
         /**
-         * РџРѕР»СѓС‡РµРЅРёРµ РѕРїС†РёР№ РѕРїР»Р°С‚С‹
-         * @param string $orderStatus РЅРѕРІС‹Р№ СЃС‚Р°С‚СѓСЃ Р·Р°РєР°Р·Р°
-         * @param string $orderExistingStatus РїСЂРµРґС‹РґСѓС‰РёР№ СЃС‚Р°С‚СѓСЃ Р·Р°РєР°Р·Р°
-         * @param bool $orderPaid Р±С‹Р» Р»Рё Р·Р°РєР°Р· РѕРїР»Р°С‡РµРЅ
+         * Получение опций оплаты
+         * @param string $orderStatus новый статус заказа
+         * @param string $orderExistingStatus предыдущий статус заказа
+         * @param bool $orderPaid был ли заказ оплачен
          */
 
         if (!$orderPaid) {
@@ -161,9 +161,9 @@ class KomtetKassaBase
     protected function generatePosition($position, $quantity = 1)
     {
         /**
-         * РџРѕР»СѓС‡РµРЅРё РїРѕР·РёС†РёРё Р·Р°РєР°Р·Р°
-         * @param array $position РџРѕР·РёС†РёСЏРІ Р·Р°РєР°Р·Рµ Bitrix
-         * @param int|float $quantity РљРѕР»РёС‡РµСЃС‚РІРѕРІРѕ С‚РѕРІР°СЂР° РІ РїРѕР·РёС†РёРё
+         * Получени позиции заказа
+         * @param array $position Позицияв заказе Bitrix
+         * @param int|float $quantity Количествово товара в позиции
          */
 
         $itemVatRate = Vat::RATE_NO;
@@ -183,8 +183,8 @@ class KomtetKassaBase
     public function getNomenclatureCodes($position_id)
     {
         /**
-         * РџРѕР»СѓС‡РµРЅРё СЃРїРёСЃРєР° РјР°СЂРєРёСЂРѕРІРѕРє
-         * @param int $position_id РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ РїРѕР·РёС†РёРё РІ Р·Р°РєР°Р·Рµ
+         * Получени списка маркировок
+         * @param int $position_id Идентификатор позиции в заказе
          */
         global $DB;
 
@@ -219,7 +219,7 @@ class KomtetKassaOld extends KomtetKassaBase
                 $arPath = explode('/', $pAction['ACTION_FILE']);
                 if (end($arPath) == 'cash') {
 
-                    // РµСЃР»Рё FullPayment, С‚Рѕ СЃС‚Р°РІРёС‚СЃСЏ prepayment - Р·Р°РєСЂС‹С‚РёРµ РїСЂРµРґРѕРїР»Р°С‚С‹
+                    // если FullPayment, то ставится prepayment - закрытие предоплаты
                     $type = $isFullPayment ? Payment::TYPE_PREPAYMENT : Payment::TYPE_CASH;
 
                     return new Payment($type, round($sum, 2));
@@ -227,7 +227,7 @@ class KomtetKassaOld extends KomtetKassaBase
             }
         }
 
-        // РµСЃР»Рё FullPayment, С‚Рѕ СЃС‚Р°РІРёС‚СЃСЏ prepayment - Р·Р°РєСЂС‹С‚РёРµ РїСЂРµРґРѕРїР»Р°С‚С‹
+        // если FullPayment, то ставится prepayment - закрытие предоплаты
         $type = $isFullPayment ? Payment::TYPE_PREPAYMENT : Payment::TYPE_CARD;
 
         return new Payment($type, round($sum, 2));
@@ -323,13 +323,13 @@ class KomtetKassaD7 extends KomtetKassaBase
         $paySystem = $payment->getPaySystem();
 
         if ($paySystem->isCash()) {
-            // РµСЃР»Рё FullPayment, С‚Рѕ СЃС‚Р°РІРёС‚СЃСЏ prepayment - Р·Р°РєСЂС‹С‚РёРµ РїСЂРµРґРѕРїР»Р°С‚С‹
+            // если FullPayment, то ставится prepayment - закрытие предоплаты
             $type = $isFullPayment ? Payment::TYPE_PREPAYMENT : Payment::TYPE_CASH;
 
             return new Payment($type, round($payment->getSum(), 2));
         }
 
-        // РµСЃР»Рё FullPayment, С‚Рѕ СЃС‚Р°РІРёС‚СЃСЏ prepayment - Р·Р°РєСЂС‹С‚РёРµ РїСЂРµРґРѕРїР»Р°С‚С‹
+        // если FullPayment, то ставится prepayment - закрытие предоплаты
         $type = $isFullPayment ? Payment::TYPE_PREPAYMENT : Payment::TYPE_CARD;
 
         return new Payment($type, round($payment->getSum(), 2));
@@ -429,7 +429,7 @@ class KomtetKassaD7 extends KomtetKassaBase
                     KomtetKassaReportsTable::add([
                         'order_id' => $order->getId(),
                         'state' => $paymentProps['calculationMethod'].":error",
-                        'error_description' => "РњР°СЂРєРёСЂРѕРІРєРё Р·Р°РґР°РЅС‹ РЅРµ Сѓ РІСЃРµС… С‚РѕРІР°СЂРѕРІ"]
+                        'error_description' => "Маркировки заданы не у всех товаров"]
                     );
                     return;
                 }
