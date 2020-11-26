@@ -158,7 +158,7 @@ class KomtetKassaBase
         );
     }
 
-    protected function generatePosition($position, $quantity = 1)
+    protected function generatePosition($position, $calc_method = null, $calc_subject = null, $quantity = 1)
     {
         /**
          * Получени позиции заказа
@@ -171,13 +171,18 @@ class KomtetKassaBase
             $itemVatRate = floatval($position->getField('VAT_RATE'));
         }
 
-        return new Position(
+        $pos = new Position(
             mb_convert_encoding($position->getField('NAME'), 'UTF-8', LANG_CHARSET),
             round($position->getPrice(), 2),
             $quantity,
             round($position->getPrice()*$quantity, 2),
             new Vat($itemVatRate)
         );
+
+        $pos->setCalculationMethod($calc_method);
+        $pos->setCalculationSubject($calc_subject);
+
+        return $pos;
     }
 
     public function getNomenclatureCodes($position_id)
@@ -435,13 +440,22 @@ class KomtetKassaD7 extends KomtetKassaBase
                 }
 
                 for ($item = 0; $item < $position->getQuantity(); $item++) {
-                    $marked_position = $this->generatePosition($position);
+                    $marked_position = $this->generatePosition(
+                        $position,
+                        $paymentProps['calculationMethod'],
+                        $paymentProps['calculationSubject']
+                    );
                     $nomenclature_code = array_shift($nomenclature_codes);
                     $marked_position->setNomenclature(new Nomenclature($nomenclature_code));
                     $check->addPosition($marked_position);
                 }
             } else {
-                $check->addPosition($this->generatePosition($position, $position->getQuantity()));
+                $check->addPosition($this->generatePosition(
+                    $position,
+                    $paymentProps['calculationMethod'],
+                    $paymentProps['calculationSubject'],
+                    $position->getQuantity()
+                ));
             }
         }
 
