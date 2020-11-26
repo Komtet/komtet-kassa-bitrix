@@ -52,17 +52,17 @@ $orderID = $data['external_id'];
 $success = $data['state'] == 'done';
 $errorDescription = !$success ? $data['error_description'] : '';
 
-try {
-    KomtetKassaReportsTable::add([
-        'order_id' => $orderID,
-        'state' => intval(!$success),
-        'error_description' => $errorDescription]
-    );
-} catch (\Exception $e) {
-    header('HTTP/1.1 500 Internal Server Error');
-    error_log(sprintf('Unable to add report from komtet kassa: %s', $e->getMessage()));
-    exit();
-}
+// try {
+//     KomtetKassaReportsTable::add([
+//         'order_id' => $orderID,
+//         'state' => intval(!$success),
+//         'error_description' => $errorDescription]
+//     );
+// } catch (\Exception $e) {
+//     header('HTTP/1.1 500 Internal Server Error');
+//     error_log(sprintf('Unable to add report from komtet kassa: %s', $e->getMessage()));
+//     exit();
+// }
 
 header('HTTP/1.1 200 OK');
 exit();
