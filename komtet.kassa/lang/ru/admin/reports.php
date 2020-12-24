@@ -1,8 +1,8 @@
 <?php
 
-$MESS['KOMTETKASSA_REPORTS_TITLE'] = 'ÐžÑ‚Ñ‡Ñ‘Ñ‚Ñ‹';
-$MESS['KOMTETKASSA_REPORTS_MODULE_INCLUDE_ERROR'] = 'ÐÐµ ÑƒÐ´Ð°Ð»Ð¾ÑÑŒ Ð¿Ð¾Ð»ÐºÐ»ÑŽÑ‡Ð¸Ñ‚ÑŒ Ð¼Ð¾Ð´ÑƒÐ»ÑŒ "ÐšÐžÐœÐ¢Ð•Ð¢ ÐšÐ°ÑÑÐ°"';
-$MESS['KOMTETKASSA_REPORTS_ITEM_ID'] = 'Ð˜Ð”';
-$MESS['KOMTETKASSA_REPORTS_ITEM_ORDER_ID'] = 'Ð˜Ð” Ð—Ð°ÐºÐ°Ð·Ð°';
-$MESS['KOMTETKASSA_REPORTS_ITEM_STATE'] = 'Ð¡Ð¾ÑÑ‚Ð¾ÑÐ½Ð¸Ðµ';
-$MESS['KOMTETKASSA_REPORTS_ITEM_ERROR_DESCR'] = 'ÐžÐ¿Ð¸ÑÐ°Ð½Ð¸Ðµ Ð¾ÑˆÐ¸Ð±ÐºÐ¸';
+$MESS['KOMTETKASSA_REPORTS_TITLE'] = 'Îò÷¸òû';
+$MESS['KOMTETKASSA_REPORTS_MODULE_INCLUDE_ERROR'] = 'Íå óäàëîñü ïîëêëþ÷èòü ìîäóëü "ÊÎÌÒÅÒ Êàññà"';
+$MESS['KOMTETKASSA_REPORTS_ITEM_ID'] = 'ÈÄ';
+$MESS['KOMTETKASSA_REPORTS_ITEM_ORDER_ID'] = 'ÈÄ Çàêàçà';
+$MESS['KOMTETKASSA_REPORTS_ITEM_STATE'] = 'Ñîñòîÿíèå';
+$MESS['KOMTETKASSA_REPORTS_ITEM_ERROR_DESCR'] = 'Îïèñàíèå îøèáêè';

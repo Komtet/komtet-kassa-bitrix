@@ -1,4 +1,4 @@
 <?php
-$MESS['KOMTETKASSA_PARTNER_NAME'] = 'ÐšÐžÐœÐ¢Ð•Ð¢';
-$MESS['KOMTETKASSA_MODULE_NAME'] = 'ÐšÐžÐœÐ¢Ð•Ð¢ ÐšÐ°ÑÑÐ°';
-$MESS['KOMTETKASSA_MODULE_DESCRIPTION'] = 'Ð˜Ð½Ñ‚ÐµÐ³Ñ€Ð°Ñ†Ð¸Ñ Ñ ÑÐµÑ€Ð²Ð¸ÑÐ¾Ð¼ Ð¿ÐµÑ‡Ð°Ñ‚Ð¸ Ñ‡ÐµÐºÐ¾Ð² ÐšÐžÐœÐ¢Ð•Ð¢ ÐšÐ°ÑÑÐ°';
+$MESS['KOMTETKASSA_PARTNER_NAME'] = 'ÊÎÌÒÅÒ';
+$MESS['KOMTETKASSA_MODULE_NAME'] = 'ÊÎÌÒÅÒ Êàññà';
+$MESS['KOMTETKASSA_MODULE_DESCRIPTION'] = 'Èíòåãðàöèÿ ñ ñåðâèñîì ïå÷àòè ÷åêîâ ÊÎÌÒÅÒ Êàññà';

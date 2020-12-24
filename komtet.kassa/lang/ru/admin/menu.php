@@ -1,3 +1,3 @@
 <?php
-$MESS['KOMTETKASSA_MENU_TEXT'] = 'ÐšÐžÐœÐ¢Ð•Ð¢ ÐšÐ°ÑÑÐ°';
-$MESS['KOMTETKASSA_MENU_REPORTS_TEXT'] = 'ÐžÑ‚Ñ‡Ñ‘Ñ‚Ñ‹';
+$MESS['KOMTETKASSA_MENU_TEXT'] = 'ÊÎÌÒÅÒ Êàññà';
+$MESS['KOMTETKASSA_MENU_REPORTS_TEXT'] = 'Îò÷¸òû';

@@ -248,7 +248,12 @@ class KomtetKassaOld extends KomtetKassaBase
         }
 
         $user = CUser::GetByID($order['USER_ID'])->Fetch();
-        $check = Check::createSell($orderID, $user['EMAIL'], $this->taxSystem);
+        $userPhone = $user['PERSONAL_MOBILE'] ? $user['PERSONAL_MOBILE'] : $user['PERSONAL_PHONE'];
+        $check = Check::createSell(
+            $orderID, 
+            $user['EMAIL'] ? $user['EMAIL'] : $userPhone, 
+            $this->taxSystem
+        );
         $check->setShouldPrint($this->shouldPrint);
 
         $checkPayment = $this->getPayment(
@@ -377,6 +382,7 @@ class KomtetKassaD7 extends KomtetKassaBase
 
         $propertyCollection = $order->getPropertyCollection();
         $userEmail = $propertyCollection->getUserEmail();
+
         if ($userEmail) {
             $userEmail = $userEmail->getValue();
         } else { // if email field have not flag "is_email"
@@ -388,6 +394,17 @@ class KomtetKassaD7 extends KomtetKassaBase
             }
         }
 
+        //get user Phone
+        $userPhone = $propertyCollection->getPhone();
+        if ($userPhone) {
+            $userPhone = $userPhone->getValue();
+        } else { // if phone field don't have flag "is_phone"
+            foreach ($propertyCollection as $orderField) {
+                $userPhone = $orderField->getField('CODE') == 'PHONE' ? $orderField->getValue() : NULL;
+                break;
+            }
+        }
+
         // take email from order user
         if (!$userEmail) {
             $userId = $order->getUserId();
@@ -396,7 +413,11 @@ class KomtetKassaD7 extends KomtetKassaBase
             $userEmail = $user['EMAIL'];
         }
 
-        $check = Check::createSell($order->getId(), $userEmail, $this->taxSystem);
+        $check = Check::createSell(
+            $order->getId(), 
+            $userPhone ? $userPhone : $userEmail, 
+            $this->taxSystem
+        );
         $check->setShouldPrint($this->shouldPrint);
 
         $payments = array();
