@@ -251,7 +251,7 @@ class KomtetKassaOld extends KomtetKassaBase
         $userPhone = $user['PERSONAL_MOBILE'] ? $user['PERSONAL_MOBILE'] : $user['PERSONAL_PHONE'];
         $check = Check::createSell(
             $orderID, 
-            $user['EMAIL'] ? $user['EMAIL'] : $userPhone, 
+            $userPhone ? $userPhone : $user['EMAIL'], 
             $this->taxSystem
         );
         $check->setShouldPrint($this->shouldPrint);
@@ -400,8 +400,10 @@ class KomtetKassaD7 extends KomtetKassaBase
             $userPhone = $userPhone->getValue();
         } else { // if phone field don't have flag "is_phone"
             foreach ($propertyCollection as $orderField) {
-                $userPhone = $orderField->getField('CODE') == 'PHONE' ? $orderField->getValue() : NULL;
-                break;
+                if ($orderField->getField('CODE') == 'PHONE') {
+                    $userPhone = $orderField->getValue();
+                    break;
+                }
             }
         }
 
