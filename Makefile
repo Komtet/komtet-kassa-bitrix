@@ -13,4 +13,4 @@ release:  ## Создание релиза маркет/github
 	@helpers/create_release.bash $(VERSION)
 
 .PHONY: version  release
-.DEFAULT_GOAL := help
+.DEFAULT_GOAL := version

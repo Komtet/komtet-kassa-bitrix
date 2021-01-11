@@ -18,22 +18,25 @@ CYAN="\033[1;36m"
 
 echo -e "${CYAN}Cборка обновлений для загрузок в маркетплейс/github${COLOR_OFF}\n"
 
-LAST_TAG=($(git tag -l | tail -1))
+LAST_TAG=$(git tag -l | tail -1)
 [ -z "$LAST_TAG" ] && { echo -e "${RED}Последний тег не найден${COLOR_OFF}"; exit 1; }
 echo -e "${CYAN}Текущая версия проекта: ${YELLOW}${LAST_TAG}${COLOR_OFF}"
 
-PREVIOUS_TAG=($(git tag -l | tail -2 | head -1))
+PREVIOUS_TAG=$(git tag -l | tail -2 | head -1)
 [ -z "$PREVIOUS_TAG" ] && { echo -e "${RED}Предпоследний тег не найден${COLOR_OFF}"; exit 1; }
 echo -e "${CYAN}Предпоследняя версия проекта: ${YELLOW}${PREVIOUS_TAG}${COLOR_OFF}\n"
 
 DIFFS=($(git diff $LAST_TAG $PREVIOUS_TAG --name-only| grep komtet.kassa))
 echo -e "\n${CYAN}Обнаружены отличия в файлах: ${COLOR_OFF}"
 
-#Сборка для маркетплейса
-[ -d "$DIST_MARKET_DIR/$VERSION_DIR" ] && rm -rf "$DIST_MARKET_DIR/$VERSION_DIR"
-[ -f "$DIST_MARKET_DIR/$VERSION_TAR" ] && rm  "$DIST_MARKET_DIR/$VERSION_TAR"
-mkdir -p "$DIST_MARKET_DIR"
+#Архивирование для github
+mkdir -p "$DIST_GITHUB_DIR"
+tar --exclude=$PROJECT_DIR'/lib/komtet-kassa-php-sdk/.*' \
+   -czf $PROJECT_TAR $PROJECT_DIR
+mv $PROJECT_TAR $DIST_GITHUB_DIR
 
+#Архивирование для маркетплейса
+mkdir -p "$DIST_MARKET_DIR"
 for element in "${DIFFS[@]}"
 do
    DIRNAME=("$DIST_MARKET_DIR/$(dirname ${element})")
@@ -42,21 +45,7 @@ do
 done
 
 mv "$DIST_MARKET_DIR/$PROJECT_DIR" "$DIST_MARKET_DIR/$VERSION_DIR"
-
-#Сборка для github
-[ -d "$DIST_GITHUB_DIR/$PROJECT_DIR" ] && rm -rf "$DIST_GITHUB_DIR/$PROJECT_DIR"
-[ -f "$DIST_GITHUB_DIR/$PROJECT_TAR" ] && rm "$DIST_GITHUB_DIR/$PROJECT_TAR"
-mkdir -p "$DIST_GITHUB_DIR/$PROJECT_DIR"
-
-cp -r $PROJECT_DIR'/.' "$DIST_GITHUB_DIR/$PROJECT_DIR"
-
-#Архивирование
-cd $DIST_MARKET_DIR && tar czf $VERSION_TAR $VERSION_DIR && rm -rf $VERSION_DIR && cd -
-cd $DIST_GITHUB_DIR && \
-   tar \
-      --exclude=$PROJECT_DIR'/lib/komtet-kassa-php-sdk/.*' \
-      -czf $PROJECT_TAR $PROJECT_DIR && \
-   rm -rf $PROJECT_DIR && cd -
+cd $DIST_MARKET_DIR && tar -czf $VERSION_TAR $VERSION_DIR && rm -rf $VERSION_DIR && cd -
 
 echo -e "\n${CYAN}Сборка обновлений завершена.${COLOR_OFF}"
 echo -e "${CYAN}Для маркетплейса: ${YELLOW}${DIST_MARKET_DIR}/${VERSION_TAR}${COLOR_OFF}"
