@@ -39,7 +39,7 @@ mv $PROJECT_TAR $DIST_GITHUB_DIR
 mkdir -p "$DIST_MARKET_DIR"
 for element in "${DIFFS[@]}"
 do
-   DIRNAME=("$DIST_MARKET_DIR/$(dirname ${element})")
+   DIRNAME="$DIST_MARKET_DIR/$(dirname ${element})"
    echo -e "${RED} * ${element} ${COLOR_OFF}"
    mkdir -p $DIRNAME && cp -r ${element} $DIRNAME
 done
