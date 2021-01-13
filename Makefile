@@ -10,7 +10,7 @@ version:  ## Версия проекта
 	@echo -e "${Red}Version:${Color_Off} $(VERSION)";
 
 release:  ## Создание релиза маркет/github
-	@helpers/create_release.bash $(VERSION)
+	@./create_release.bash $(VERSION)
 
 .PHONY: version  release
 .DEFAULT_GOAL := version
