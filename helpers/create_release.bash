@@ -27,7 +27,6 @@ PREVIOUS_TAG=$(git tag -l | tail -2 | head -1)
 echo -e "${CYAN}Предпоследняя версия проекта: ${YELLOW}${PREVIOUS_TAG}${COLOR_OFF}\n"
 
 DIFFS=($(git diff $LAST_TAG $PREVIOUS_TAG --name-only| grep komtet.kassa))
-echo -e "\n${CYAN}Обнаружены отличия в файлах: ${COLOR_OFF}"
 
 #Архивирование для github
 mkdir -p "$DIST_GITHUB_DIR"
@@ -37,15 +36,8 @@ mv $PROJECT_TAR $DIST_GITHUB_DIR
 
 #Архивирование для маркетплейса
 mkdir -p "$DIST_MARKET_DIR"
-for element in "${DIFFS[@]}"
-do
-   DIRNAME="$DIST_MARKET_DIR/$(dirname ${element})"
-   echo -e "${RED} * ${element} ${COLOR_OFF}"
-   mkdir -p $DIRNAME && cp -r ${element} $DIRNAME
-done
-
-mv "$DIST_MARKET_DIR/$PROJECT_DIR" "$DIST_MARKET_DIR/$VERSION_DIR"
-cd $DIST_MARKET_DIR && tar -czf $VERSION_TAR $VERSION_DIR && rm -rf $VERSION_DIR && cd -
+tar --transform="flags=r;s|^komtet.kassa|$VERSION|" -czf $VERSION_TAR "${DIFFS[@]}"
+mv $VERSION_TAR $DIST_MARKET_DIR
 
 echo -e "\n${CYAN}Сборка обновлений завершена.${COLOR_OFF}"
 echo -e "${CYAN}Для маркетплейса: ${YELLOW}${DIST_MARKET_DIR}/${VERSION_TAR}${COLOR_OFF}"
