@@ -30,14 +30,12 @@ DIFFS=($(git diff $LAST_TAG $PREVIOUS_TAG --name-only| grep komtet.kassa))
 
 #Архивирование для github
 mkdir -p "$DIST_GITHUB_DIR"
-tar --exclude=$PROJECT_DIR'/lib/komtet-kassa-php-sdk/.*' \
-   -czf $PROJECT_TAR $PROJECT_DIR
-mv $PROJECT_TAR $DIST_GITHUB_DIR
+tar --exclude=$PROJECT_DIR'/lib/komtet-kassa-php-sdk/' \
+   -czf $DIST_GITHUB_DIR/$PROJECT_TAR $PROJECT_DIR
 
 #Архивирование для маркетплейса
 mkdir -p "$DIST_MARKET_DIR"
-tar --transform="flags=r;s|^komtet.kassa|$VERSION|" -czf $VERSION_TAR "${DIFFS[@]}"
-mv $VERSION_TAR $DIST_MARKET_DIR
+tar --transform="flags=r;s|^komtet.kassa|$VERSION|" -czf $DIST_MARKET_DIR/$VERSION_TAR "${DIFFS[@]}"
 
 echo -e "\n${CYAN}Сборка обновлений завершена.${COLOR_OFF}"
 echo -e "${CYAN}Для маркетплейса: ${YELLOW}${DIST_MARKET_DIR}/${VERSION_TAR}${COLOR_OFF}"
