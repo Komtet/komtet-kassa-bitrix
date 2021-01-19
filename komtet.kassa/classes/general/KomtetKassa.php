@@ -251,7 +251,7 @@ class KomtetKassaOld extends KomtetKassaBase
         $userPhone = $user['PERSONAL_MOBILE'] ? $user['PERSONAL_MOBILE'] : $user['PERSONAL_PHONE'];
         $check = Check::createSell(
             $orderID, 
-            $userPhone ? $userPhone : $user['EMAIL'], 
+            $user['EMAIL'] ? $user['EMAIL'] : $userPhone,
             $this->taxSystem
         );
         $check->setShouldPrint($this->shouldPrint);
@@ -407,17 +407,9 @@ class KomtetKassaD7 extends KomtetKassaBase
             }
         }
 
-        // take email from order user
-        if (!$userEmail) {
-            $userId = $order->getUserId();
-            $rsUser = UserTable::getById($userId);
-            $user = $rsUser->fetch();
-            $userEmail = $user['EMAIL'];
-        }
-
         $check = Check::createSell(
             $order->getId(), 
-            $userPhone ? $userPhone : $userEmail, 
+            $userEmail ? $userEmail : $userPhone, 
             $this->taxSystem
         );
         $check->setShouldPrint($this->shouldPrint);
