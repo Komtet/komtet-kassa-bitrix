@@ -310,7 +310,7 @@ class KomtetKassaOld extends KomtetKassaBase
             );
 
             $deliveryPosition->setCalculationMethod($paymentProps['calculationMethod']);
-            $deliveryPosition->setCalculationSubject($paymentProps['calculationSubject']);
+            $deliveryPosition->setCalculationSubject(CalculationSubject::SERVICE);
 
             $check->addPosition($deliveryPosition);
         }
@@ -497,7 +497,7 @@ class KomtetKassaD7 extends KomtetKassaBase
                     new Vat($shipmentVatRate)
                 );
                 $shipmentPosition->setCalculationMethod($paymentProps['calculationMethod']);
-                $shipmentPosition->setCalculationSubject($paymentProps['calculationSubject']);
+                $shipmentPosition->setCalculationSubject(CalculationSubject::SERVICE);
 
                 $check->addPosition($shipmentPosition);
             }
