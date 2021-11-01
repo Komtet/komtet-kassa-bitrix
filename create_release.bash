@@ -23,11 +23,11 @@ mkdir -p "$DIST_GITHUB_DIR"
 tar --exclude=$PROJECT_DIR'/lib/komtet-kassa-php-sdk/' \
    -czf $DIST_GITHUB_DIR/$PROJECT_TAR $PROJECT_DIR
 
-LAST_TAG=$(git tag -l | tail -1)
+LAST_TAG=$(git tag -l --sort=-creatordate | head -1)
 [ -z "$LAST_TAG" ] && { echo -e "${RED}Последний тег не найден${COLOR_OFF}"; exit 1; }
 echo -e "${CYAN}Текущая версия проекта: ${YELLOW}${LAST_TAG}${COLOR_OFF}"
 
-PREVIOUS_TAG=$(git tag -l | tail -2 | head -1)
+PREVIOUS_TAG=$(git tag -l --sort=-creatordate | head -2 | tail -1)
 [ -z "$PREVIOUS_TAG" ] && { echo -e "${RED}Предпоследний тег не найден${COLOR_OFF}"; exit 1; }
 echo -e "${CYAN}Предпоследняя версия проекта: ${YELLOW}${PREVIOUS_TAG}${COLOR_OFF}\n"
 
