@@ -20,7 +20,6 @@ git clone --recursive git@github.com:Komtet/komtet-kassa-bitrix.git
 ```sh
 sudo cp [путь_до_проекта]/komtet-kassa-bitrix/bitrix_nginx.cfg /etc/nginx/sites-enabled
 ```
-```
 * Перезапустить nginx
 ```sh
 sudo nginx -t
