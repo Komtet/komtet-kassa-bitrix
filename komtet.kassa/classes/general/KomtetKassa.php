@@ -431,8 +431,8 @@ class KomtetKassaD7 extends KomtetKassaBase
         $positions = $order->getBasket();
 
         foreach ($positions as $position) {
-            if ($position->getField('MARKING_CODE_GROUP') &&
-            $paymentProps['calculationMethod'] == CalculationMethod::FULL_PAYMENT) {
+            if ($position->getField('MARKING_CODE_GROUP') 
+            && $paymentProps['calculationMethod'] == CalculationMethod::FULL_PAYMENT) {
                 $positionID = $position->getField('ID');
                 $nomenclature_codes = $this->getNomenclatureCodes($positionID);
 
