@@ -1,2 +1,5 @@
 /docker_env/php/
 dist/**
+/php/**
+/data
+komtet-kassa-bitrix-delivery

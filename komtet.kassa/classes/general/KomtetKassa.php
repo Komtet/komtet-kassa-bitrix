@@ -103,22 +103,13 @@ class KomtetKassaBase
         return $result;
     }
 
-    protected function getPaymentProps($orderStatus, $orderExistingStatus, $orderPaid)
+    protected function getPaymentProps($orderStatus, $orderExistingStatus)
     {
         /**
          * Получение опций оплаты
          * @param string $orderStatus новый статус заказа
          * @param string $orderExistingStatus предыдущий статус заказа
-         * @param bool $orderPaid был ли заказ оплачен
          */
-
-        if (!$orderPaid) {
-            return array(
-                'calculationMethod' => null,
-                'calculationSubject' => null,
-                'isFullPayment' => null
-            );
-        }
 
         // 1 check way
         if (!$this->prepaymentOrderStatus && $orderStatus == $this->fullPaymentOrderStatus) {
@@ -368,7 +359,7 @@ class KomtetKassaD7 extends KomtetKassaBase
             return;
         }
 
-        $paymentProps = $this->getPaymentProps($order->getField('STATUS_ID'), $existingRow['state'], $order->isPaid());
+        $paymentProps = $this->getPaymentProps($order->getField('STATUS_ID'), $existingRow['state']);
 
         if ($paymentProps['calculationMethod'] === null) {
             return;
@@ -440,12 +431,12 @@ class KomtetKassaD7 extends KomtetKassaBase
         $positions = $order->getBasket();
 
         foreach ($positions as $position) {
-            if ($position->getField('MARKING_CODE_GROUP')) {
+            if ($position->getField('MARKING_CODE_GROUP') 
+            && $paymentProps['calculationMethod'] == CalculationMethod::FULL_PAYMENT) {
                 $positionID = $position->getField('ID');
                 $nomenclature_codes = $this->getNomenclatureCodes($positionID);
 
-                if (count($nomenclature_codes) < $position->getQuantity() &&
-                    $paymentProps['calculationMethod'] == CalculationMethod::FULL_PAYMENT) {
+                if (count($nomenclature_codes) < $position->getQuantity()) {
                     KomtetKassaReportsTable::add([
                         'order_id' => $order->getId(),
                         'state' => $paymentProps['calculationMethod'].":error",
