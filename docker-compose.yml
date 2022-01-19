@@ -15,10 +15,27 @@ services:
     ports:
       - "9906:3306"
 
-  web:
-    image: bitrix_web:last
-    build: .
-    container_name: web
+  web8:
+    build: 
+      context: .
+      target: php8
+    container_name: web8
+    depends_on:
+      - db
+    volumes:
+      - ./php/:/var/www/html/
+    ports:
+      - "5666:80"
+    links:
+      - db:mysql
+    stdin_open: true
+    tty: true
+
+  web7:
+    build: 
+      context: .
+      target: php7
+    container_name: web7
     depends_on:
       - db
     volumes:

@@ -2,9 +2,6 @@
 komtet-kassa-bitrix
 
 ## Запуск проекта
-Для запуска и тестирования проекта воспользуйтесь инструкцией по настройке окружения плагина Комтет Кассы для фискализации чеков - https://github.com/Komtet/komtet-kassa-bitrix
-
-## Запуск проекта
 * Скачать проект
 ```sh
 git clone --recursive git@github.com:Komtet/komtet-kassa-bitrix.git
@@ -41,9 +38,14 @@ sudo chmod -R 777 php
 ```sh
 make build
 ```
-* Запустить проект
+* Запустить проект с php7
 ```sh
-make start
+make start_web7
+```
+
+* Запустить проект с php8
+```sh
+make start_web8
 ```
 * Проект будет доступен по адресу: http://bitrix.localhost.ru
 

@@ -18,8 +18,11 @@ build:  ## Собрать контейнер
 	@sudo chmod -R 777 php/ &&\
 	 docker-compose build
 
-start:  ## Запустить контейнер
-	@docker-compose up -d web
+start_web7:  ## Запустить контейнер с php7
+	@docker-compose up -d web7
+
+start_web8:  ## Запустить контейнер с php8
+	@docker-compose up -d web8
 
 stop:  ## Остановить контейнер
 	@docker-compose down
