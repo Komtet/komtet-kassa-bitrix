@@ -125,7 +125,7 @@ function AddMultiSelectField($form, $id, $content, $required, $arSelect, $value=
   $html .= '>';
 
   foreach($arSelect as $key => $val)
-    $html .= '<option value="'.htmlspecialcharsbx($key).'"'.(in_array($key, $value)? ' selected': '').'>'.htmlspecialcharsex($val).'</option>';
+    $html .= '<option value="'.htmlspecialcharsbx($key).'"'.(in_array($key, $value ?: array())? ' selected': '').'>'.htmlspecialcharsex($val).'</option>';
   $html .= '</select>';
 
   $form->tabs[$form->tabIndex]["FIELDS"][$id] = array(
@@ -133,7 +133,7 @@ function AddMultiSelectField($form, $id, $content, $required, $arSelect, $value=
     "required" => $required,
     "content" => $content,
     "html" => '<td width="40%">'.($required? '<span class="adm-required-field">'.$form->GetCustomLabelHTML($id, $content).'</span>': $form->GetCustomLabelHTML($id, $content)).'</td><td>'.$html.'</td>',
-    "hidden" => '<input type="hidden" name="'.$id.'" value="'.htmlspecialcharsbx($value).'">',
+    "hidden" => '<input type="hidden" name="'.$id.'" value="'.htmlspecialcharsex($value).'">',
   );
 }
 
