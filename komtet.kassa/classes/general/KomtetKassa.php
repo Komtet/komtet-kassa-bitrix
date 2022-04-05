@@ -1,5 +1,7 @@
 <?php
 
+use Komtet\KassaSdk\Exception\ApiValidationException;
+use Komtet\KassaSdk\Exception\ClientException;
 use Komtet\KassaSdk\Exception\SdkException;
 use Komtet\KassaSdk\CalculationMethod;
 use Komtet\KassaSdk\CalculationSubject;
@@ -496,11 +498,30 @@ class KomtetKassaD7 extends KomtetKassaBase
 
         try {
             $this->manager->putCheck($check);
+        } catch (ApiValidationException $e) {
+            KomtetKassaReportsTable::add([
+                'order_id' => $order->getId(),
+                'state' => $paymentProps['calculationMethod'].":error",
+                'error_description' => $e->getMessage()." ".$e->getDescription()
+                ]
+            );
+            error_log(sprintf('Failed to send check: %s', $e->getMessage()));
+            return;
         } catch (SdkException $e) {
             KomtetKassaReportsTable::add([
                 'order_id' => $order->getId(),
                 'state' => $paymentProps['calculationMethod'].":error",
-                'error_description' => $e->getMessage()." ".$e->getDescription()]
+                'error_description' => $e->getMessage()
+                ]
+            );
+            error_log(sprintf('Failed to send check: %s', $e->getMessage()));
+            return;
+        } catch (ClientException $e) {
+            KomtetKassaReportsTable::add([
+                'order_id' => $order->getId(),
+                'state' => $paymentProps['calculationMethod'].":error",
+                'error_description' => $e->getMessage()
+                ]
             );
             error_log(sprintf('Failed to send check: %s', $e->getMessage()));
             return;
