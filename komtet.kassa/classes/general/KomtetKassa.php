@@ -134,7 +134,8 @@ class KomtetKassaBase
             // full payment
             else if ($orderStatus == $this->fullPaymentOrderStatus &&
                      ($orderExistingStatus == CalculationMethod::PRE_PAYMENT_FULL ||
-                      $orderExistingStatus == CalculationMethod::PRE_PAYMENT_FULL.":done")
+                      $orderExistingStatus == CalculationMethod::PRE_PAYMENT_FULL.":done" ||
+                      $orderExistingStatus == CalculationMethod::FULL_PAYMENT.":error")
                 ) {
                 return array(
                     'calculationMethod' => CalculationMethod::FULL_PAYMENT,
@@ -366,12 +367,6 @@ class KomtetKassaD7 extends KomtetKassaBase
         if ($paymentProps['calculationMethod'] === null) {
             return;
         }
-
-        KomtetKassaReportsTable::add([
-            'order_id' => $order->getId(),
-            'state' => $paymentProps['calculationMethod'],
-            'error_description' => '']
-        );
 
         $propertyCollection = $order->getPropertyCollection();
         $userEmail = $propertyCollection->getUserEmail();
