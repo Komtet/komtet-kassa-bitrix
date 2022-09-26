@@ -161,8 +161,21 @@ class KomtetKassaBase
          */
 
         $itemVatRate = Vat::RATE_NO;
-        if ($this->taxSystem == TaxSystem::COMMON) {
+
+        // Если в Битриксе у товара не выбрана ставка НДС или ставка "БЕЗ НДС", то НДС возвращается как 0
+        if (floatval($position->getField('VAT_RATE'))) {
             $itemVatRate = floatval($position->getField('VAT_RATE'));
+        }
+
+        if ($calc_method == CalculationMethod::PRE_PAYMENT_FULL) {
+            // Ставка НДС в Битрикс хранится дробно, поэтому преобразовываем её для сравнения
+            // К примеру, НДС 20% в битрикс 0.002
+            if ((floatval($position->getField('VAT_RATE')) * 100) == 10) {
+                $itemVatRate = '10/110';
+            }
+            else if ((floatval($position->getField('VAT_RATE')) * 100) == 20) {
+                $itemVatRate = '20/120';
+            }
         }
 
         $pos = new Position(
@@ -244,7 +257,7 @@ class KomtetKassaOld extends KomtetKassaBase
         $user = CUser::GetByID($order['USER_ID'])->Fetch();
         $userPhone = $user['PERSONAL_MOBILE'] ? $user['PERSONAL_MOBILE'] : $user['PERSONAL_PHONE'];
         $check = Check::createSell(
-            $orderID, 
+            $orderID,
             $user['EMAIL'] ? $user['EMAIL'] : $userPhone,
             $this->taxSystem
         );
@@ -396,8 +409,8 @@ class KomtetKassaD7 extends KomtetKassaBase
         }
 
         $check = Check::createSell(
-            $order->getId(), 
-            $userEmail ? $userEmail : $userPhone, 
+            $order->getId(),
+            $userEmail ? $userEmail : $userPhone,
             $this->taxSystem
         );
         $check->setShouldPrint($this->shouldPrint);
@@ -428,7 +441,7 @@ class KomtetKassaD7 extends KomtetKassaBase
         $positions = $order->getBasket();
 
         foreach ($positions as $position) {
-            if ($position->getField('MARKING_CODE_GROUP') 
+            if ($position->getField('MARKING_CODE_GROUP')
             && $paymentProps['calculationMethod'] == CalculationMethod::FULL_PAYMENT) {
                 $positionID = $position->getField('ID');
                 $nomenclature_codes = $this->getNomenclatureCodes($positionID);
