@@ -74,6 +74,7 @@ class KomtetKassaBase
         $this->manager->registerQueue('default', $options['queue_id']);
         $this->manager->setDefaultQueue('default');
         $this->shouldPrint = $options['should_print'];
+        $this->calculationSubject = $options['calculation_subject'];
         $this->taxSystem = $options['tax_system'];
         $this->paySystems = $options['pay_systems'];
         $this->fullPaymentOrderStatus = $options['full_payment_order_status'];
@@ -92,12 +93,16 @@ class KomtetKassaBase
             'secret' => COption::GetOptionString($moduleID, 'secret_key'),
             'queue_id' => COption::GetOptionString($moduleID, 'queue_id'),
             'should_print' => COption::GetOptionInt($moduleID, 'should_print') == 1,
+            'calculation_subject' => COption::GetOptionString($moduleID, 'calculation_subject'),
             'tax_system' => intval(COption::GetOptionInt($moduleID, 'tax_system')),
             'pay_systems' => json_decode(COption::GetOptionString($moduleID, 'pay_systems')),
             'full_payment_order_status' => COption::GetOptionString($moduleID, 'full_payment_order_status'),
             'prepayment_order_status' => COption::GetOptionString($moduleID, 'prepayment_order_status')
         );
-        foreach (array('key', 'secret', 'queue_id', 'tax_system', 'full_payment_order_status') as $key) {
+        foreach (array(
+            'key', 'secret', 'queue_id','calculation_subject',
+            'tax_system', 'full_payment_order_status'
+        ) as $key) {
             if (empty($result[$key])) {
                 error_log(sprintf('Option "%s" for module "komtet.kassa" is required', $key));
             }
@@ -117,7 +122,7 @@ class KomtetKassaBase
         if (!$this->prepaymentOrderStatus && $orderStatus == $this->fullPaymentOrderStatus) {
             return array(
                 'calculationMethod' => CalculationMethod::FULL_PAYMENT,
-                'calculationSubject' => CalculationSubject::PRODUCT,
+                'calculationSubject' => $this->calculationSubject,
                 'isFullPayment' => false
             );
         }
@@ -139,7 +144,7 @@ class KomtetKassaBase
                 ) {
                 return array(
                     'calculationMethod' => CalculationMethod::FULL_PAYMENT,
-                    'calculationSubject' => CalculationSubject::PRODUCT,
+                    'calculationSubject' => $this->calculationSubject,
                     'isFullPayment' => true
                 );
             }
@@ -244,7 +249,7 @@ class KomtetKassaOld extends KomtetKassaBase
         $user = CUser::GetByID($order['USER_ID'])->Fetch();
         $userPhone = $user['PERSONAL_MOBILE'] ? $user['PERSONAL_MOBILE'] : $user['PERSONAL_PHONE'];
         $check = Check::createSell(
-            $orderID, 
+            $orderID,
             $user['EMAIL'] ? $user['EMAIL'] : $userPhone,
             $this->taxSystem
         );
@@ -396,8 +401,8 @@ class KomtetKassaD7 extends KomtetKassaBase
         }
 
         $check = Check::createSell(
-            $order->getId(), 
-            $userEmail ? $userEmail : $userPhone, 
+            $order->getId(),
+            $userEmail ? $userEmail : $userPhone,
             $this->taxSystem
         );
         $check->setShouldPrint($this->shouldPrint);
@@ -428,7 +433,7 @@ class KomtetKassaD7 extends KomtetKassaBase
         $positions = $order->getBasket();
 
         foreach ($positions as $position) {
-            if ($position->getField('MARKING_CODE_GROUP') 
+            if ($position->getField('MARKING_CODE_GROUP')
             && $paymentProps['calculationMethod'] == CalculationMethod::FULL_PAYMENT) {
                 $positionID = $position->getField('ID');
                 $nomenclature_codes = $this->getNomenclatureCodes($positionID);
