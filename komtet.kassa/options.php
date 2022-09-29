@@ -157,14 +157,6 @@ while ($stype = $resStatus->Fetch()) {
     $orderStatuses[$stype["ID"]] = $stype["NAME"];
 }
 
-$form->AddDropDownField(
-    'FULL_PAYMENT_ORDER_STATUS',
-    GetMessage('KOMTETKASSA_OPTIONS_FULL_PAYMENT_ORDER_STATUS'),
-    false,
-    $orderStatuses,
-    COption::GetOptionString($moduleId, 'full_payment_order_status')
-);
-
 $orderStatuses["komtet_kassa_do_not_fiscalize"] = "Не выдавать";
 $form->AddDropDownField(
     'PREPAYMENT_ORDER_STATUS',
@@ -172,6 +164,14 @@ $form->AddDropDownField(
     false,
     $orderStatuses,
     COption::GetOptionString($moduleId, 'prepayment_order_status')
+);
+
+$form->AddDropDownField(
+    'FULL_PAYMENT_ORDER_STATUS',
+    GetMessage('KOMTETKASSA_OPTIONS_FULL_PAYMENT_ORDER_STATUS'),
+    false,
+    $orderStatuses,
+    COption::GetOptionString($moduleId, 'full_payment_order_status')
 );
 
 $form->Buttons(array(
