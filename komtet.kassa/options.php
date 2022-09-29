@@ -3,6 +3,7 @@ $moduleId = 'komtet.kassa';
 
 use Bitrix\Main\Loader,
     Bitrix\Main\Localization\Loc;
+use Komtet\KassaSdk\CalculationSubject;
 use Komtet\KassaSdk\TaxSystem;
 
 if (!$USER->IsAdmin()) {
@@ -26,9 +27,10 @@ if ($REQUEST_METHOD == 'POST' && check_bitrix_sessid()) {
         'should_print' => 'bool',
         'queue_id' => 'string',
         'tax_system' => 'integer',
+        'calculation_subject' => 'string',
         'pay_systems' => 'array',
-        'full_payment_order_status' => 'string',
-        'prepayment_order_status' => 'string'
+        'prepayment_order_status' => 'string',
+        'full_payment_order_status' => 'string'
     );
     foreach ($data as $key => $type) {
         $value = filter_input(INPUT_POST, strtoupper($key));
@@ -112,6 +114,17 @@ $form->AddDropDownField(
         TaxSystem::PATENT => GetMessage('KOMTETKASSA_OPTIONS_TS_PATENT')
     ),
     COption::GetOptionString($moduleId, 'tax_system')
+);
+
+$form->AddDropDownField(
+    'CALCULATION_SUBJECT',
+    GetMessage('KOMTETKASSA_OPTIONS_CALCULATION_SUBJECT'),
+    true,
+    array(
+        CalculationSubject::PRODUCT => GetMessage('KOMTETKASSA_OPTIONS_CALCULATION_SUBJECT_PRODUCT'),
+        CalculationSubject::SERVICE => GetMessage('KOMTETKASSA_OPTIONS_CALCULATION_SUBJECT_SERVICE'),
+    ),
+    COption::GetOptionString($moduleId, 'calculation_subject', CalculationSubject::PRODUCT)
 );
 
 function AddMultiSelectField($form, $id, $content, $required, $arSelect, $value=false, $arParams=array())
