@@ -93,7 +93,7 @@ class KomtetKassaBase
             'secret' => COption::GetOptionString($moduleID, 'secret_key'),
             'queue_id' => COption::GetOptionString($moduleID, 'queue_id'),
             'should_print' => COption::GetOptionInt($moduleID, 'should_print') == 1,
-            'calculation_subject' => COption::GetOptionString($moduleID, 'calculation_subject'),
+            'calculation_subject' => COption::GetOptionString($moduleID, 'calculation_subject', CalculationSubject::PRODUCT),
             'tax_system' => intval(COption::GetOptionInt($moduleID, 'tax_system')),
             'pay_systems' => json_decode(COption::GetOptionString($moduleID, 'pay_systems')),
             'full_payment_order_status' => COption::GetOptionString($moduleID, 'full_payment_order_status'),
