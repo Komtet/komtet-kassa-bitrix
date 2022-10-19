@@ -487,12 +487,23 @@ class KomtetKassaD7 extends KomtetKassaBase
         $shipmentCollection = $order->getShipmentCollection();
         foreach ($shipmentCollection as $shipment) {
 
+            // Если в Битриксе у доставки ставка НДС "БЕЗ НДС", то НДС возвращается как 0
             if ($shipment->getPrice() > 0.0) {
+                $shipmentVatRate = Vat::RATE_NO;
 
-                if ($this->taxSystem == TaxSystem::COMMON && method_exists($shipment, 'getVatRate')) {
+                if (method_exists($shipment, 'getVatRate') && floatval($shipment->getVatRate())) {
                     $shipmentVatRate = floatval($shipment->getVatRate());
-                } else {
-                    $shipmentVatRate = Vat::RATE_NO;
+                }
+
+                if ($paymentProps['calculationMethod'] == CalculationMethod::PRE_PAYMENT_FULL) {
+                    // Ставка НДС в Битрикс хранится дробно, поэтому преобразовываем её для сравнения
+                    // К примеру, НДС 20% в битрикс 0.002
+                    if ((floatval($shipment->getVatRate()) * 100) == 10) {
+                        $shipmentVatRate = '10/110';
+                    }
+                    else if ((floatval($shipment->getVatRate()) * 100) == 20) {
+                        $shipmentVatRate = '20/120';
+                    }
                 }
 
                 $shipmentPosition = new Position(
