@@ -1,7 +1,6 @@
 version: '3.4'
 
 services:
-
   db:
     image: mysql:5.7
     container_name: db
@@ -13,26 +12,42 @@ services:
     volumes:
       - ./data/mysql:/var/lib/mysql
     ports:
-      - "9906:3306"
+      - '9906:3306'
 
-  web8:
-    build: 
+  web_8_2:
+    build:
       context: .
-      target: php8
-    container_name: web8
+      target: php_8_2
+    container_name: php_8_2
     depends_on:
       - db
     volumes:
       - ./php/:/var/www/html/
     ports:
-      - "5666:80"
+      - '5666:80'
+    links:
+      - db:mysql
+    stdin_open: true
+    tty: true
+
+  web_8_1:
+    build:
+      context: .
+      target: php_8_1
+    container_name: php_8_1
+    depends_on:
+      - db
+    volumes:
+      - ./php/:/var/www/html/
+    ports:
+      - '5666:80'
     links:
       - db:mysql
     stdin_open: true
     tty: true
 
   web7:
-    build: 
+    build:
       context: .
       target: php7
     container_name: web7
@@ -41,7 +56,7 @@ services:
     volumes:
       - ./php/:/var/www/html/
     ports:
-      - "5666:80"
+      - '5666:80'
     links:
       - db:mysql
     stdin_open: true

@@ -1,23 +1,47 @@
-FROM php:7.3-apache as php7
+FROM php:7.4-apache as php7
 RUN docker-php-ext-install mysqli
 
-RUN apt-get update && apt-get install -y libpng-dev 
+RUN apt-get update && apt-get install -y libpng-dev zlib1g-dev
 RUN apt-get install -y \
     libwebp-dev \
     libjpeg62-turbo-dev \
     libpng-dev libxpm-dev \
-    libfreetype6-dev
-
-RUN docker-php-ext-configure gd \
-    --with-gd \
-    --with-webp-dir \
-    --with-jpeg-dir \
-    --with-png-dir \
-    --with-zlib-dir \
-    --with-xpm-dir \
-    --with-freetype-dir 
+    libfreetype6-dev \
+    libpng-dev zlib1g-dev
 
 RUN docker-php-ext-install gd
+
+RUN docker-php-ext-configure gd \
+    --enable-gd \
+    --with-webp \
+    --with-jpeg \
+    --with-xpm \
+    --with-freetype
+
+RUN a2enmod rewrite
+
+WORKDIR /var/www/html
+COPY php.ini /usr/local/etc/php/
+
+FROM php:8.1-apache as php_8_1
+RUN docker-php-ext-install mysqli
+
+RUN apt-get update && apt-get install -y libpng-dev zlib1g-dev
+RUN apt-get install -y \
+    libwebp-dev \
+    libjpeg62-turbo-dev \
+    libpng-dev libxpm-dev \
+    libfreetype6-dev \
+    libpng-dev zlib1g-dev
+
+RUN docker-php-ext-install gd
+
+RUN docker-php-ext-configure gd \
+    --enable-gd \
+    --with-webp \
+    --with-jpeg \
+    --with-xpm \
+    --with-freetype
 
 RUN a2enmod rewrite
 
@@ -25,10 +49,10 @@ WORKDIR /var/www/html
 COPY php.ini /usr/local/etc/php/
 
 
-FROM php:8.0-apache as php8
+FROM php:8.2-apache as php_8_2
 RUN docker-php-ext-install mysqli
 
-RUN apt-get update && apt-get install -y libpng-dev 
+RUN apt-get update && apt-get install -y libpng-dev zlib1g-dev
 RUN apt-get install -y \
     libwebp-dev \
     libjpeg62-turbo-dev \
@@ -36,6 +60,13 @@ RUN apt-get install -y \
     libfreetype6-dev
 
 RUN docker-php-ext-install gd
+
+RUN docker-php-ext-configure gd \
+    --enable-gd \
+    --with-webp \
+    --with-jpeg \
+    --with-xpm \
+    --with-freetype
 
 RUN a2enmod rewrite
 
