@@ -84,7 +84,7 @@ class KomtetKassaBase
     private function getOptions()
     {
         /**
-         * Получение настроек плагина
+         * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
          */
 
         $moduleID = 'komtet.kassa';
@@ -113,9 +113,9 @@ class KomtetKassaBase
     protected function getPaymentProps($orderStatus, $orderExistingStatus)
     {
         /**
-         * Получение опций оплаты
-         * @param string $orderStatus новый статус заказа
-         * @param string $orderExistingStatus предыдущий статус заказа
+         * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+         * @param string $orderStatus пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+         * @param string $orderExistingStatus пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
          */
 
         // 1 check way
@@ -160,21 +160,21 @@ class KomtetKassaBase
     protected function generatePosition($position, $calc_method = null, $calc_subject = null, $quantity = 1)
     {
         /**
-         * Получени позиции заказа
-         * @param array $position Позицияв заказе Bitrix
-         * @param int|float $quantity Количествово товара в позиции
+         * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+         * @param array $position пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ Bitrix
+         * @param int|float $quantity пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
          */
 
         $itemVatRate = Vat::RATE_NO;
 
-        // Если в Битриксе у товара не выбрана ставка НДС или ставка "БЕЗ НДС", то НДС возвращается как 0
+        // пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ "пїЅпїЅпїЅ пїЅпїЅпїЅ", пїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ 0
         if (floatval($position->getField('VAT_RATE'))) {
             $itemVatRate = floatval($position->getField('VAT_RATE'));
         }
 
         if ($calc_method == CalculationMethod::PRE_PAYMENT_FULL) {
-            // Ставка НДС в Битрикс хранится дробно, поэтому преобразовываем её для сравнения
-            // К примеру, НДС 20% в битрикс 0.002
+            // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+            // пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅ 20% пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ 0.002
             if ((floatval($position->getField('VAT_RATE')) * 100) == 10) {
                 $itemVatRate = '10/110';
             }
@@ -200,8 +200,8 @@ class KomtetKassaBase
     public function getNomenclatureCodes($position_id)
     {
         /**
-         * Получени списка маркировок
-         * @param int $position_id Идентификатор позиции в заказе
+         * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+         * @param int $position_id пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
          */
         global $DB;
 
@@ -213,6 +213,18 @@ class KomtetKassaBase
             array_push($nomenclature_codes, $nomenclature_code['MARKING_CODE']);
         }
         return $nomenclature_codes;
+    }
+
+    //format user Phone
+    public function formatPhoneNumber($phoneNumber) {
+        if (substr($phoneNumber, 0, 1) == "+" || substr($phoneNumber, 0, 1) == "7") {
+            $phoneNumber = preg_replace('/[^0-9]/', '', $phoneNumber);
+            $phoneNumber = "+" . $phoneNumber;
+        } else {
+            $phoneNumber = preg_replace('/[^0-9]/', '', $phoneNumber);
+        }
+
+        return $phoneNumber;
     }
 
 }
@@ -236,7 +248,7 @@ class KomtetKassaOld extends KomtetKassaBase
                 $arPath = explode('/', $pAction['ACTION_FILE']);
                 if (end($arPath) == 'cash') {
 
-                    // если FullPayment, то ставится prepayment - закрытие предоплаты
+                    // пїЅпїЅпїЅпїЅ FullPayment, пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ prepayment - пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
                     $type = $isFullPayment ? Payment::TYPE_PREPAYMENT : Payment::TYPE_CASH;
 
                     return new Payment($type, round($sum, 2));
@@ -244,7 +256,7 @@ class KomtetKassaOld extends KomtetKassaBase
             }
         }
 
-        // если FullPayment, то ставится prepayment - закрытие предоплаты
+        // пїЅпїЅпїЅпїЅ FullPayment, пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ prepayment - пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         $type = $isFullPayment ? Payment::TYPE_PREPAYMENT : Payment::TYPE_CARD;
 
         return new Payment($type, round($sum, 2));
@@ -345,13 +357,13 @@ class KomtetKassaD7 extends KomtetKassaBase
         $paySystem = $payment->getPaySystem();
 
         if ($paySystem->isCash()) {
-            // если FullPayment, то ставится prepayment - закрытие предоплаты
+            // пїЅпїЅпїЅпїЅ FullPayment, пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ prepayment - пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
             $type = $isFullPayment ? Payment::TYPE_PREPAYMENT : Payment::TYPE_CASH;
 
             return new Payment($type, round($payment->getSum(), 2));
         }
 
-        // если FullPayment, то ставится prepayment - закрытие предоплаты
+        // пїЅпїЅпїЅпїЅ FullPayment, пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ prepayment - пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         $type = $isFullPayment ? Payment::TYPE_PREPAYMENT : Payment::TYPE_CARD;
 
         return new Payment($type, round($payment->getSum(), 2));
@@ -413,6 +425,10 @@ class KomtetKassaD7 extends KomtetKassaBase
             }
         }
 
+        if ($userPhone) {
+            $userPhone = $this->formatPhoneNumber($userPhone);
+        }
+
         $check = Check::createSell(
             $order->getId(),
             $userEmail ? $userEmail : $userPhone,
@@ -455,7 +471,7 @@ class KomtetKassaD7 extends KomtetKassaBase
                     KomtetKassaReportsTable::add([
                         'order_id' => $order->getId(),
                         'state' => $paymentProps['calculationMethod'].":error",
-                        'error_description' => "Маркировки заданы не у всех товаров"]
+                        'error_description' => "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ"]
                     );
                     return;
                 }
@@ -487,7 +503,7 @@ class KomtetKassaD7 extends KomtetKassaBase
         $shipmentCollection = $order->getShipmentCollection();
         foreach ($shipmentCollection as $shipment) {
 
-            // Если в Битриксе у доставки ставка НДС "БЕЗ НДС", то НДС возвращается как 0
+            // пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ "пїЅпїЅпїЅ пїЅпїЅпїЅ", пїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ 0
             if ($shipment->getPrice() > 0.0) {
                 $shipmentVatRate = Vat::RATE_NO;
 
@@ -496,8 +512,8 @@ class KomtetKassaD7 extends KomtetKassaBase
                 }
 
                 if ($paymentProps['calculationMethod'] == CalculationMethod::PRE_PAYMENT_FULL) {
-                    // Ставка НДС в Битрикс хранится дробно, поэтому преобразовываем её для сравнения
-                    // К примеру, НДС 20% в битрикс 0.002
+                    // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+                    // пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅ 20% пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ 0.002
                     if ((floatval($shipment->getVatRate()) * 100) == 10) {
                         $shipmentVatRate = '10/110';
                     }
