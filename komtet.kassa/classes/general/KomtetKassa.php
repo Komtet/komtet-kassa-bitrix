@@ -426,7 +426,6 @@ class KomtetKassaD7 extends KomtetKassaBase
             }
         }
 
-        // format user Phone
         if ($userPhone) {
             $userPhone = $this->formatPhoneNumber($userPhone);
         }
