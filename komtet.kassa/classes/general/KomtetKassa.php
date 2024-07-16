@@ -220,11 +220,9 @@ class KomtetKassaBase
      * Для телефона, который начинается на 7 без '+' добавляем '+' в начало.
      */
     public function formatPhoneNumber($phoneNumber) {
-        if (substr($phoneNumber, 0, 1) == "+" || substr($phoneNumber, 0, 1) == "7") {
-            $phoneNumber = preg_replace('/[^0-9]/', '', $phoneNumber);
+        $phoneNumber = preg_replace('/[^0-9+]/', '', $phoneNumber);
+        if (substr($phoneNumber, 0, 1) == "7") {
             $phoneNumber = "+" . $phoneNumber;
-        } else {
-            $phoneNumber = preg_replace('/[^0-9]/', '', $phoneNumber);
         }
 
         return $phoneNumber;
