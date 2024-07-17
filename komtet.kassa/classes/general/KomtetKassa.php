@@ -416,18 +416,14 @@ class KomtetKassaD7 extends KomtetKassaBase
         // get user Phone
         $userPhone = $propertyCollection->getPhone();
         if ($userPhone) {
-            $userPhone = $userPhone->getValue();
+            $userPhone = $this->formatPhoneNumber($userPhone->getValue());
         } else { // if phone field don't have flag "is_phone"
             foreach ($propertyCollection as $orderField) {
                 if ($orderField->getField('CODE') == 'PHONE') {
-                    $userPhone = $orderField->getValue();
+                    $userPhone = $this->formatPhoneNumber($orderField->getValue());
                     break;
                 }
             }
-        }
-
-        if ($userPhone) {
-            $userPhone = $this->formatPhoneNumber($userPhone);
         }
                 
         $check = Check::createSell(
