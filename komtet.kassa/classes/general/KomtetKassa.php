@@ -425,7 +425,7 @@ class KomtetKassaD7 extends KomtetKassaBase
                 }
             }
         }
-                
+
         $check = Check::createSell(
             $order->getId(),
             $userEmail ? $userEmail : $userPhone,
