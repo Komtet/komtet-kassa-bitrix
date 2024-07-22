@@ -215,6 +215,19 @@ class KomtetKassaBase
         return $nomenclature_codes;
     }
 
+    /**
+     * Убираем из телефона все, кроме цифр и символа '+' в начале номера, если он есть.
+     * Для телефона, который начинается на 7 без '+' добавляем '+' в начало.
+     */
+    public function formatPhoneNumber($phoneNumber) {
+        $phoneNumber = preg_replace('/[^0-9+]/', '', $phoneNumber);
+        if (substr($phoneNumber, 0, 1) == "7") {
+            $phoneNumber = "+" . $phoneNumber;
+        }
+
+        return $phoneNumber;
+    }
+
 }
 
 
@@ -400,14 +413,14 @@ class KomtetKassaD7 extends KomtetKassaBase
             }
         }
 
-        //get user Phone
+        // get user Phone
         $userPhone = $propertyCollection->getPhone();
         if ($userPhone) {
-            $userPhone = $userPhone->getValue();
+            $userPhone = $this->formatPhoneNumber($userPhone->getValue());
         } else { // if phone field don't have flag "is_phone"
             foreach ($propertyCollection as $orderField) {
                 if ($orderField->getField('CODE') == 'PHONE') {
-                    $userPhone = $orderField->getValue();
+                    $userPhone = $this->formatPhoneNumber($orderField->getValue());
                     break;
                 }
             }
