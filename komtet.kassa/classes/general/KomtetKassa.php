@@ -3,16 +3,16 @@
 use Komtet\KassaSdk\Exception\ApiValidationException;
 use Komtet\KassaSdk\Exception\ClientException;
 use Komtet\KassaSdk\Exception\SdkException;
-use Komtet\KassaSdk\CalculationMethod;
-use Komtet\KassaSdk\CalculationSubject;
-use Komtet\KassaSdk\Check;
-use Komtet\KassaSdk\Client;
-use Komtet\KassaSdk\Nomenclature;
-use Komtet\KassaSdk\Payment;
-use Komtet\KassaSdk\Position;
-use Komtet\KassaSdk\TaxSystem;
-use Komtet\KassaSdk\QueueManager;
-use Komtet\KassaSdk\Vat;
+use Komtet\KassaSdk\v1\CalculationMethod;
+use Komtet\KassaSdk\v1\CalculationSubject;
+use Komtet\KassaSdk\v1\Check;
+use Komtet\KassaSdk\v1\Client;
+use Komtet\KassaSdk\v1\Nomenclature;
+use Komtet\KassaSdk\v1\Payment;
+use Komtet\KassaSdk\v1\Position;
+use Komtet\KassaSdk\v1\TaxSystem;
+use Komtet\KassaSdk\v1\QueueManager;
+use Komtet\KassaSdk\v1\Vat;
 use Bitrix\Main\UserTable;
 
 
@@ -84,7 +84,7 @@ class KomtetKassaBase
     private function getOptions()
     {
         /**
-         * Получение настроек плагина
+         * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
          */
 
         $moduleID = 'komtet.kassa';
@@ -113,9 +113,9 @@ class KomtetKassaBase
     protected function getPaymentProps($orderStatus, $orderExistingStatus)
     {
         /**
-         * Получение опций оплаты
-         * @param string $orderStatus новый статус заказа
-         * @param string $orderExistingStatus предыдущий статус заказа
+         * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+         * @param string $orderStatus пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+         * @param string $orderExistingStatus пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
          */
 
         // 1 check way
@@ -160,25 +160,33 @@ class KomtetKassaBase
     protected function generatePosition($position, $calc_method = null, $calc_subject = null, $quantity = 1)
     {
         /**
-         * Получени позиции заказа
-         * @param array $position Позицияв заказе Bitrix
-         * @param int|float $quantity Количествово товара в позиции
+         * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+         * @param array $position пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ Bitrix
+         * @param int|float $quantity пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
          */
 
         $itemVatRate = Vat::RATE_NO;
 
-        // Если в Битриксе у товара не выбрана ставка НДС или ставка "БЕЗ НДС", то НДС возвращается как 0
+        // пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ "пїЅпїЅпїЅ пїЅпїЅпїЅ", пїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ 0
         if (floatval($position->getField('VAT_RATE'))) {
             $itemVatRate = floatval($position->getField('VAT_RATE'));
         }
 
         if ($calc_method == CalculationMethod::PRE_PAYMENT_FULL) {
-            // Ставка НДС в Битрикс хранится дробно, поэтому преобразовываем её для сравнения
-            // К примеру, НДС 20% в битрикс 0.002
-            if ((floatval($position->getField('VAT_RATE')) * 100) == 10) {
+            // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+            // пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅ 20% пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ 0.002
+            $vatRate = intval(floatval($position->getField('VAT_RATE')) * 100);
+
+            if ($vatRate == 5) {
+                $itemVatRate = '5/105';
+            } 
+            else if ($vatRate == 7) {
+                $itemVatRate = '7/107';
+            } 
+            else if ($vatRate == 10) {
                 $itemVatRate = '10/110';
-            }
-            else if ((floatval($position->getField('VAT_RATE')) * 100) == 20) {
+            } 
+            else if ($vatRate == 20) {
                 $itemVatRate = '20/120';
             }
         }
@@ -200,8 +208,8 @@ class KomtetKassaBase
     public function getNomenclatureCodes($position_id)
     {
         /**
-         * Получени списка маркировок
-         * @param int $position_id Идентификатор позиции в заказе
+         * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+         * @param int $position_id пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
          */
         global $DB;
 
@@ -216,8 +224,8 @@ class KomtetKassaBase
     }
 
     /**
-     * Убираем из телефона все, кроме цифр и символа '+' в начале номера, если он есть.
-     * Для телефона, который начинается на 7 без '+' добавляем '+' в начало.
+     * пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ '+' пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ.
+     * пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ 7 пїЅпїЅпїЅ '+' пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ '+' пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ.
      */
     public function formatPhoneNumber($phoneNumber) {
         $phoneNumber = preg_replace('/[^0-9+]/', '', $phoneNumber);
@@ -249,7 +257,7 @@ class KomtetKassaOld extends KomtetKassaBase
                 $arPath = explode('/', $pAction['ACTION_FILE']);
                 if (end($arPath) == 'cash') {
 
-                    // если FullPayment, то ставится prepayment - закрытие предоплаты
+                    // пїЅпїЅпїЅпїЅ FullPayment, пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ prepayment - пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
                     $type = $isFullPayment ? Payment::TYPE_PREPAYMENT : Payment::TYPE_CASH;
 
                     return new Payment($type, round($sum, 2));
@@ -257,7 +265,7 @@ class KomtetKassaOld extends KomtetKassaBase
             }
         }
 
-        // если FullPayment, то ставится prepayment - закрытие предоплаты
+        // пїЅпїЅпїЅпїЅ FullPayment, пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ prepayment - пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         $type = $isFullPayment ? Payment::TYPE_PREPAYMENT : Payment::TYPE_CARD;
 
         return new Payment($type, round($sum, 2));
@@ -298,11 +306,9 @@ class KomtetKassaOld extends KomtetKassaBase
         );
 
         while ($item = $dbBasket->GetNext()) {
-            if ($this->taxSystem == TaxSystem::COMMON) {
-                $itemVatRate = round(floatval($item['VAT_RATE']) * 100, 2);
-            } else {
-                $itemVatRate = Vat::RATE_NO;
-            }
+            $itemVatRate = floatval($item['VAT_RATE']) > 0 
+            ? (int) round(floatval($item['VAT_RATE']) * 100) 
+            : Vat::RATE_NO;
 
             $checkPosition = new Position(
                 mb_convert_encoding($item['NAME'], 'UTF-8', LANG_CHARSET),
@@ -358,13 +364,13 @@ class KomtetKassaD7 extends KomtetKassaBase
         $paySystem = $payment->getPaySystem();
 
         if ($paySystem->isCash()) {
-            // если FullPayment, то ставится prepayment - закрытие предоплаты
+            // пїЅпїЅпїЅпїЅ FullPayment, пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ prepayment - пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
             $type = $isFullPayment ? Payment::TYPE_PREPAYMENT : Payment::TYPE_CASH;
 
             return new Payment($type, round($payment->getSum(), 2));
         }
 
-        // если FullPayment, то ставится prepayment - закрытие предоплаты
+        // пїЅпїЅпїЅпїЅ FullPayment, пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ prepayment - пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         $type = $isFullPayment ? Payment::TYPE_PREPAYMENT : Payment::TYPE_CARD;
 
         return new Payment($type, round($payment->getSum(), 2));
@@ -468,7 +474,7 @@ class KomtetKassaD7 extends KomtetKassaBase
                     KomtetKassaReportsTable::add([
                         'order_id' => $order->getId(),
                         'state' => $paymentProps['calculationMethod'].":error",
-                        'error_description' => "Маркировки заданы не у всех товаров"]
+                        'error_description' => "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ"]
                     );
                     return;
                 }
@@ -500,7 +506,7 @@ class KomtetKassaD7 extends KomtetKassaBase
         $shipmentCollection = $order->getShipmentCollection();
         foreach ($shipmentCollection as $shipment) {
 
-            // Если в Битриксе у доставки ставка НДС "БЕЗ НДС", то НДС возвращается как 0
+            // пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ "пїЅпїЅпїЅ пїЅпїЅпїЅ", пїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ 0
             if ($shipment->getPrice() > 0.0) {
                 $shipmentVatRate = Vat::RATE_NO;
 
@@ -509,12 +515,20 @@ class KomtetKassaD7 extends KomtetKassaBase
                 }
 
                 if ($paymentProps['calculationMethod'] == CalculationMethod::PRE_PAYMENT_FULL) {
-                    // Ставка НДС в Битрикс хранится дробно, поэтому преобразовываем её для сравнения
-                    // К примеру, НДС 20% в битрикс 0.002
-                    if ((floatval($shipment->getVatRate()) * 100) == 10) {
+                    // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+                    // пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅ 20% пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ 0.002
+                    $shipmentVatRate = intval(floatval($shipment->getVatRate()) * 100);
+
+                    if ($shipmentVatRate == 5) {
+                        $shipmentVatRate = '5/105';
+                    } 
+                    else if ($shipmentVatRate == 7) {
+                        $shipmentVatRate = '7/107';
+                    } 
+                    else if ($shipmentVatRate == 10) {
                         $shipmentVatRate = '10/110';
-                    }
-                    else if ((floatval($shipment->getVatRate()) * 100) == 20) {
+                    } 
+                    else if ($shipmentVatRate == 20) {
                         $shipmentVatRate = '20/120';
                     }
                 }

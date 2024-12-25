@@ -1,22 +1,21 @@
 <?php
-$MESS['KOMTETKASSA_OPTIONS_SHOP_ID'] = 'Идентификатор магазина';
-$MESS['KOMTETKASSA_OPTIONS_SECRET_KEY'] = 'Секретный ключ';
-$MESS['KOMTETKASSA_OPTIONS_SHOULD_PRINT'] = 'Печатать чек';
-$MESS['KOMTETKASSA_OPTIONS_QUEUE_ID'] = 'Идентификатор очереди';
-$MESS['KOMTETKASSA_OPTIONS_TAX_SYSTEM'] = 'Система налогооблажения';
-$MESS['KOMTETKASSA_OPTIONS_CALCULATION_SUBJECT'] = 'Предмет расчета';
-$MESS['KOMTETKASSA_OPTIONS_PAY_SYSTEMS'] = 'Платежные системы';
-$MESS['KOMTETKASSA_OPTIONS_FULL_PAYMENT_ORDER_STATUS'] = 'Статус заказа для полной оплаты';
-$MESS['KOMTETKASSA_OPTIONS_PREPAYMENT_ORDER_STATUS'] = 'Статус заказа для предоплаты';
+$MESS['KOMTETKASSA_OPTIONS_SHOP_ID'] = 'пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ';
+$MESS['KOMTETKASSA_OPTIONS_SECRET_KEY'] = 'пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ';
+$MESS['KOMTETKASSA_OPTIONS_SHOULD_PRINT'] = 'пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ';
+$MESS['KOMTETKASSA_OPTIONS_QUEUE_ID'] = 'пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ';
+$MESS['KOMTETKASSA_OPTIONS_TAX_SYSTEM'] = 'пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ';
+$MESS['KOMTETKASSA_OPTIONS_CALCULATION_SUBJECT'] = 'пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ';
+$MESS['KOMTETKASSA_OPTIONS_PAY_SYSTEMS'] = 'пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ';
+$MESS['KOMTETKASSA_OPTIONS_FULL_PAYMENT_ORDER_STATUS'] = 'пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ';
+$MESS['KOMTETKASSA_OPTIONS_PREPAYMENT_ORDER_STATUS'] = 'пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ';
 
-$MESS['KOMTETKASSA_OPTIONS_TS_COMMON'] = 'ОСН';
-$MESS['KOMTETKASSA_OPTIONS_TS_SIMPLIFIED_IN'] = 'УСН доход';
-$MESS['KOMTETKASSA_OPTIONS_TS_SIMPLIFIED_IN_OUT'] = 'УСН доход - расход';
-$MESS['KOMTETKASSA_OPTIONS_TS_UTOII'] = 'ЕНВД';
-$MESS['KOMTETKASSA_OPTIONS_TS_UST'] = 'ЕСН';
-$MESS['KOMTETKASSA_OPTIONS_TS_PATENT'] = 'Патент';
-$MESS['KOMTETKASSA_OPTIONS_FULL_PAYMENT_ORDER_STATUS'] = 'Статус заказа для полной оплаты';
-$MESS['KOMTETKASSA_OPTIONS_PREPAYMENT_ORDER_STATUS'] = 'Статус заказа для предоплаты';
+$MESS['KOMTETKASSA_OPTIONS_TS_COMMON'] = 'пїЅпїЅпїЅ';
+$MESS['KOMTETKASSA_OPTIONS_TS_SIMPLIFIED_IN'] = 'пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ';
+$MESS['KOMTETKASSA_OPTIONS_TS_SIMPLIFIED_IN_OUT'] = 'пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ - пїЅпїЅпїЅпїЅпїЅпїЅ';
+$MESS['KOMTETKASSA_OPTIONS_TS_UST'] = 'пїЅпїЅпїЅ';
+$MESS['KOMTETKASSA_OPTIONS_TS_PATENT'] = 'пїЅпїЅпїЅпїЅпїЅпїЅ';
+$MESS['KOMTETKASSA_OPTIONS_FULL_PAYMENT_ORDER_STATUS'] = 'пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ';
+$MESS['KOMTETKASSA_OPTIONS_PREPAYMENT_ORDER_STATUS'] = 'пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ';
 
-$MESS['KOMTETKASSA_OPTIONS_CALCULATION_SUBJECT_PRODUCT'] = 'Товар';
-$MESS['KOMTETKASSA_OPTIONS_CALCULATION_SUBJECT_SERVICE'] = 'Услуга';
+$MESS['KOMTETKASSA_OPTIONS_CALCULATION_SUBJECT_PRODUCT'] = 'пїЅпїЅпїЅпїЅпїЅ';
+$MESS['KOMTETKASSA_OPTIONS_CALCULATION_SUBJECT_SERVICE'] = 'пїЅпїЅпїЅпїЅпїЅпїЅ';

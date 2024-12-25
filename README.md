@@ -10,7 +10,7 @@ komtet-kassa-bitrix
 git clone --recursive git@github.com:Komtet/komtet-kassa-bitrix.git
 ```
 
-- Скачать установщик Bitrix CMS (Бизнес) - http://www.1c-bitrix.ru/download/cms.php
+- Скачать установщик Bitrix CMS (Бизнес) - https://www.1c-bitrix.ru/download/cms.php
 
 - Добавить в /etc/hosts 127.0.0.1 bitrix.localhost.ru
 
@@ -18,10 +18,10 @@ git clone --recursive git@github.com:Komtet/komtet-kassa-bitrix.git
 127.0.0.1 bitrix.localhost.ru
 ```
 
-- Добавить bitrix_nginx.cfg в sites-enabled nginx
+- Создаем символьную ссылку на bitrix_nginx.cfg в sites-enabled nginx
 
 ```sh
-sudo cp [путь_до_проекта]/komtet-kassa-bitrix/bitrix_nginx.cfg /etc/nginx/sites-enabled
+sudo ln -s ~/[путь_до_проекта]/komtet-kassa-bitrix/bitrix_nginx.cfg /etc/nginx/sites-enabled
 ```
 
 - Перезапустить nginx
