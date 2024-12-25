@@ -185,7 +185,7 @@ class KomtetKassaBase
             } 
             else if ($vatRate == 10) {
                 $itemVatRate = '10/110';
-            } 
+            }
             else if ($vatRate == 20) {
                 $itemVatRate = '20/120';
             }
@@ -527,7 +527,7 @@ class KomtetKassaD7 extends KomtetKassaBase
                     } 
                     else if ($shipmentVatRate == 10) {
                         $shipmentVatRate = '10/110';
-                    } 
+                    }
                     else if ($shipmentVatRate == 20) {
                         $shipmentVatRate = '20/120';
                     }
