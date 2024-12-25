@@ -1,21 +1,21 @@
 <?php
-$MESS['KOMTETKASSA_OPTIONS_SHOP_ID'] = 'Ð˜Ð´ÐµÐ½Ñ‚Ð¸Ñ„Ð¸ÐºÐ°Ñ‚Ð¾Ñ€ Ð¼Ð°Ð³Ð°Ð·Ð¸Ð½Ð°';
-$MESS['KOMTETKASSA_OPTIONS_SECRET_KEY'] = 'Ð¡ÐµÐºÑ€ÐµÑ‚Ð½Ñ‹Ð¹ ÐºÐ»ÑŽÑ‡';
-$MESS['KOMTETKASSA_OPTIONS_SHOULD_PRINT'] = 'ÐŸÐµÑ‡Ð°Ñ‚Ð°Ñ‚ÑŒ Ñ‡ÐµÐº';
-$MESS['KOMTETKASSA_OPTIONS_QUEUE_ID'] = 'Ð˜Ð´ÐµÐ½Ñ‚Ð¸Ñ„Ð¸ÐºÐ°Ñ‚Ð¾Ñ€ Ð¾Ñ‡ÐµÑ€ÐµÐ´Ð¸';
-$MESS['KOMTETKASSA_OPTIONS_TAX_SYSTEM'] = 'Ð¡Ð¸ÑÑ‚ÐµÐ¼Ð° Ð½Ð°Ð»Ð¾Ð³Ð¾Ð¾Ð±Ð»Ð°Ð¶ÐµÐ½Ð¸Ñ';
-$MESS['KOMTETKASSA_OPTIONS_CALCULATION_SUBJECT'] = 'ÐŸÑ€ÐµÐ´Ð¼ÐµÑ‚ Ñ€Ð°ÑÑ‡ÐµÑ‚Ð°';
-$MESS['KOMTETKASSA_OPTIONS_PAY_SYSTEMS'] = 'ÐŸÐ»Ð°Ñ‚ÐµÐ¶Ð½Ñ‹Ðµ ÑÐ¸ÑÑ‚ÐµÐ¼Ñ‹';
-$MESS['KOMTETKASSA_OPTIONS_FULL_PAYMENT_ORDER_STATUS'] = 'Ð¡Ñ‚Ð°Ñ‚ÑƒÑ Ð·Ð°ÐºÐ°Ð·Ð° Ð´Ð»Ñ Ð¿Ð¾Ð»Ð½Ð¾Ð¹ Ð¾Ð¿Ð»Ð°Ñ‚Ñ‹';
-$MESS['KOMTETKASSA_OPTIONS_PREPAYMENT_ORDER_STATUS'] = 'Ð¡Ñ‚Ð°Ñ‚ÑƒÑ Ð·Ð°ÐºÐ°Ð·Ð° Ð´Ð»Ñ Ð¿Ñ€ÐµÐ´Ð¾Ð¿Ð»Ð°Ñ‚Ñ‹';
+$MESS['KOMTETKASSA_OPTIONS_SHOP_ID'] = 'Èäåíòèôèêàòîð ìàãàçèíà';
+$MESS['KOMTETKASSA_OPTIONS_SECRET_KEY'] = 'Ñåêðåòíûé êëþ÷';
+$MESS['KOMTETKASSA_OPTIONS_SHOULD_PRINT'] = 'Ïå÷àòàòü ÷åê';
+$MESS['KOMTETKASSA_OPTIONS_QUEUE_ID'] = 'Èäåíòèôèêàòîð î÷åðåäè';
+$MESS['KOMTETKASSA_OPTIONS_TAX_SYSTEM'] = 'Ñèñòåìà íàëîãîîáëàæåíèÿ';
+$MESS['KOMTETKASSA_OPTIONS_CALCULATION_SUBJECT'] = 'Ïðåäìåò ðàñ÷åòà';
+$MESS['KOMTETKASSA_OPTIONS_PAY_SYSTEMS'] = 'Ïëàòåæíûå ñèñòåìû';
+$MESS['KOMTETKASSA_OPTIONS_FULL_PAYMENT_ORDER_STATUS'] = 'Ñòàòóñ çàêàçà äëÿ ïîëíîé îïëàòû';
+$MESS['KOMTETKASSA_OPTIONS_PREPAYMENT_ORDER_STATUS'] = 'Ñòàòóñ çàêàçà äëÿ ïðåäîïëàòû';
 
-$MESS['KOMTETKASSA_OPTIONS_TS_COMMON'] = 'ÐžÐ¡Ð';
-$MESS['KOMTETKASSA_OPTIONS_TS_SIMPLIFIED_IN'] = 'Ð£Ð¡Ð Ð´Ð¾Ñ…Ð¾Ð´';
-$MESS['KOMTETKASSA_OPTIONS_TS_SIMPLIFIED_IN_OUT'] = 'Ð£Ð¡Ð Ð´Ð¾Ñ…Ð¾Ð´ - Ñ€Ð°ÑÑ…Ð¾Ð´';
-$MESS['KOMTETKASSA_OPTIONS_TS_UST'] = 'Ð•Ð¡Ð';
-$MESS['KOMTETKASSA_OPTIONS_TS_PATENT'] = 'ÐŸÐ°Ñ‚ÐµÐ½Ñ‚';
-$MESS['KOMTETKASSA_OPTIONS_FULL_PAYMENT_ORDER_STATUS'] = 'Ð¡Ñ‚Ð°Ñ‚ÑƒÑ Ð·Ð°ÐºÐ°Ð·Ð° Ð´Ð»Ñ Ð¿Ð¾Ð»Ð½Ð¾Ð¹ Ð¾Ð¿Ð»Ð°Ñ‚Ñ‹';
-$MESS['KOMTETKASSA_OPTIONS_PREPAYMENT_ORDER_STATUS'] = 'Ð¡Ñ‚Ð°Ñ‚ÑƒÑ Ð·Ð°ÐºÐ°Ð·Ð° Ð´Ð»Ñ Ð¿Ñ€ÐµÐ´Ð¾Ð¿Ð»Ð°Ñ‚Ñ‹';
+$MESS['KOMTETKASSA_OPTIONS_TS_COMMON'] = 'ÎÑÍ';
+$MESS['KOMTETKASSA_OPTIONS_TS_SIMPLIFIED_IN'] = 'ÓÑÍ äîõîä';
+$MESS['KOMTETKASSA_OPTIONS_TS_SIMPLIFIED_IN_OUT'] = 'ÓÑÍ äîõîä - ðàñõîä';
+$MESS['KOMTETKASSA_OPTIONS_TS_UST'] = 'ÅÑÍ';
+$MESS['KOMTETKASSA_OPTIONS_TS_PATENT'] = 'Ïàòåíò';
+$MESS['KOMTETKASSA_OPTIONS_FULL_PAYMENT_ORDER_STATUS'] = 'Ñòàòóñ çàêàçà äëÿ ïîëíîé îïëàòû';
+$MESS['KOMTETKASSA_OPTIONS_PREPAYMENT_ORDER_STATUS'] = 'Ñòàòóñ çàêàçà äëÿ ïðåäîïëàòû';
 
-$MESS['KOMTETKASSA_OPTIONS_CALCULATION_SUBJECT_PRODUCT'] = 'Ð¢Ð¾Ð²Ð°Ñ€';
-$MESS['KOMTETKASSA_OPTIONS_CALCULATION_SUBJECT_SERVICE'] = 'Ð£ÑÐ»ÑƒÐ³Ð°';
+$MESS['KOMTETKASSA_OPTIONS_CALCULATION_SUBJECT_PRODUCT'] = 'Òîâàð';
+$MESS['KOMTETKASSA_OPTIONS_CALCULATION_SUBJECT_SERVICE'] = 'Óñëóãà';
