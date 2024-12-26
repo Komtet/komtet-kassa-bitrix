@@ -172,21 +172,22 @@ class KomtetKassaBase
             $itemVatRate = floatval($position->getField('VAT_RATE'));
         }
 
+        /**
+         * К авансам под поставку товаров, облагаемых НДС, применяем расчётную ставку
+         * Ставка НДС в Битрикс хранится дробно, поэтому преобразовываем её для сравнения.
+         * К примеру, НДС 20% в битрикс 0.2, НДС 5% в битриксе 0.05.
+         */
         if ($calc_method == CalculationMethod::PRE_PAYMENT_FULL) {
-            // Ставка НДС в Битрикс хранится дробно, поэтому преобразовываем её для сравнения
-            // К примеру, НДС 20% в битрикс 0.2
-            $vatRate = intval(floatval($position->getField('VAT_RATE')) * 100);
-
-            if ($vatRate == 5) {
+            if (intval((floatval($position->getField('VAT_RATE')) * 100)) == 5) {
                 $itemVatRate = '5/105';
-            } 
-            else if ($vatRate == 7) {
+            }
+            else if (intval((floatval($position->getField('VAT_RATE')) * 100)) == 7) {
                 $itemVatRate = '7/107';
-            } 
-            else if ($vatRate == 10) {
+            }
+            else if (intval((floatval($position->getField('VAT_RATE')) * 100)) == 10) {
                 $itemVatRate = '10/110';
             }
-            else if ($vatRate == 20) {
+            else if (intval((floatval($position->getField('VAT_RATE')) * 100)) == 20) {
                 $itemVatRate = '20/120';
             }
         }
@@ -306,9 +307,11 @@ class KomtetKassaOld extends KomtetKassaBase
         );
 
         while ($item = $dbBasket->GetNext()) {
-            $itemVatRate = floatval($item['VAT_RATE']) > 0 
-            ? (int) round(floatval($item['VAT_RATE']) * 100) 
-            : Vat::RATE_NO;
+            if ($this->taxSystem == TaxSystem::COMMON) {
+                $itemVatRate = round(floatval($item['VAT_RATE']) * 100, 2);
+            } else {
+                $itemVatRate = Vat::RATE_NO;
+            }
 
             $checkPosition = new Position(
                 mb_convert_encoding($item['NAME'], 'UTF-8', LANG_CHARSET),
@@ -514,21 +517,22 @@ class KomtetKassaD7 extends KomtetKassaBase
                     $shipmentVatRate = floatval($shipment->getVatRate());
                 }
 
+                /**
+                 * К авансам под поставку товаров, облагаемых НДС, применяем расчётную ставку
+                 * Ставка НДС в Битрикс хранится дробно, поэтому преобразовываем её для сравнения.
+                 * К примеру, НДС 20% в битрикс 0.2, НДС 5% в битриксе 0.05.
+                 */
                 if ($paymentProps['calculationMethod'] == CalculationMethod::PRE_PAYMENT_FULL) {
-                    // Ставка НДС в Битрикс хранится дробно, поэтому преобразовываем её для сравнения
-                    // К примеру, НДС 20% в битрикс 0.2
-                    $shipmentVatRate = intval(floatval($shipment->getVatRate()) * 100);
-
-                    if ($shipmentVatRate == 5) {
+                    if (intval((floatval($shipment->getVatRate()) * 100)) == 5) {
                         $shipmentVatRate = '5/105';
-                    } 
-                    else if ($shipmentVatRate == 7) {
+                    }
+                    else if (intval((floatval($shipment->getVatRate()) * 100)) == 7) {
                         $shipmentVatRate = '7/107';
-                    } 
-                    else if ($shipmentVatRate == 10) {
+                    }
+                    else if (intval((floatval($shipment->getVatRate()) * 100)) == 10) {
                         $shipmentVatRate = '10/110';
                     }
-                    else if ($shipmentVatRate == 20) {
+                    else if (intval((floatval($shipment->getVatRate()) * 100)) == 20) {
                         $shipmentVatRate = '20/120';
                     }
                 }
