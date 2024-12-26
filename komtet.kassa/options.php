@@ -3,8 +3,8 @@ $moduleId = 'komtet.kassa';
 
 use Bitrix\Main\Loader,
     Bitrix\Main\Localization\Loc;
-use Komtet\KassaSdk\CalculationSubject;
-use Komtet\KassaSdk\TaxSystem;
+use Komtet\KassaSdk\v1\CalculationSubject;
+use Komtet\KassaSdk\v1\TaxSystem;
 
 if (!$USER->IsAdmin()) {
     return;
@@ -109,7 +109,6 @@ $form->AddDropDownField(
         TaxSystem::COMMON => GetMessage('KOMTETKASSA_OPTIONS_TS_COMMON'),
         TaxSystem::SIMPLIFIED_IN => GetMessage('KOMTETKASSA_OPTIONS_TS_SIMPLIFIED_IN'),
         TaxSystem::SIMPLIFIED_IN_OUT => GetMessage('KOMTETKASSA_OPTIONS_TS_SIMPLIFIED_IN_OUT'),
-        TaxSystem::UTOII => GetMessage('KOMTETKASSA_OPTIONS_TS_UTOII'),
         TaxSystem::UST => GetMessage('KOMTETKASSA_OPTIONS_TS_UST'),
         TaxSystem::PATENT => GetMessage('KOMTETKASSA_OPTIONS_TS_PATENT')
     ),
