@@ -30,7 +30,8 @@ if ($REQUEST_METHOD == 'POST' && check_bitrix_sessid()) {
         'calculation_subject' => 'string',
         'pay_systems' => 'array',
         'prepayment_order_status' => 'string',
-        'full_payment_order_status' => 'string'
+        'full_payment_order_status' => 'string',
+        'fiscalization_start_date' => 'string'
     );
     foreach ($data as $key => $type) {
         $value = filter_input(INPUT_POST, strtoupper($key));
@@ -184,6 +185,13 @@ $form->AddDropDownField(
     false,
     $orderStatuses,
     COption::GetOptionString($moduleId, 'full_payment_order_status')
+);
+
+$form->AddCalendarField(
+    'FISCALIZATION_START_DATE',
+    GetMessage('KOMTETKASSA_OPTIONS_FISCALIZATION_START_DATE'),
+    COption::GetOptionString($moduleId, 'fiscalization_start_date'),
+    false
 );
 
 $form->Buttons(array(
