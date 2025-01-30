@@ -79,6 +79,7 @@ class KomtetKassaBase
         $this->paySystems = $options['pay_systems'];
         $this->fullPaymentOrderStatus = $options['full_payment_order_status'];
         $this->prepaymentOrderStatus = $options['prepayment_order_status'];
+        $this->fiscalizationStartDate = $options['fiscalization_start_date'];
     }
 
     private function getOptions()
@@ -97,7 +98,8 @@ class KomtetKassaBase
             'tax_system' => intval(COption::GetOptionInt($moduleID, 'tax_system')),
             'pay_systems' => json_decode(COption::GetOptionString($moduleID, 'pay_systems')),
             'full_payment_order_status' => COption::GetOptionString($moduleID, 'full_payment_order_status'),
-            'prepayment_order_status' => COption::GetOptionString($moduleID, 'prepayment_order_status')
+            'prepayment_order_status' => COption::GetOptionString($moduleID, 'prepayment_order_status'),
+            'fiscalization_start_date' => COption::GetOptionString($moduleID, 'fiscalization_start_date')
         );
         foreach (array(
             'key', 'secret', 'queue_id','calculation_subject',
@@ -397,7 +399,12 @@ class KomtetKassaD7 extends KomtetKassaBase
             ($order->getField('STATUS_ID') == $this->prepaymentOrderStatus &&
              ($existingRow['state'] == CalculationMethod::PRE_PAYMENT_FULL ||
               $existingRow['state'] == CalculationMethod::PRE_PAYMENT_FULL.":done")) ||
-            $existingRow['state'] == "done"
+            $existingRow['state'] == "done" ||
+            ($this->fiscalizationStartDate &&
+             (
+                $order->getDateInsert()->getTimestamp() <
+                DateTime::createFromFormat('d.m.Y', $this->fiscalizationStartDate)->getTimestamp()
+             ))
         ) {
             return;
         }
