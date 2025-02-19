@@ -31,7 +31,7 @@ stop:  ## Остановить контейнер
 	@docker-compose down
 
 update_kassa:  ##Обновить плагин для фискализации
-	@cp -r -f komtet.kassa php/bitrix/modules/ && cp -r -f lib php/bitrix/modules/komtet.kassa
+	@cp -r -f komtet.kassa php/bitrix/modules/
 
 update_delivery:  ##Обновить плагин для доставки
 	@cp -r -f komtet-kassa-bitrix-delivery/komtet.delivery php/bitrix/modules/
