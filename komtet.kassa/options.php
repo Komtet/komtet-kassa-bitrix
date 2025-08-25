@@ -173,13 +173,13 @@ AddMultiSelectField(
     json_decode(COption::GetOptionString($moduleId, 'pay_systems'))
 );
 
-$orderStatuses = array(null => "Íå âûáðàí");
+$orderStatuses = array(null => "ÐÐµ Ð²Ñ‹Ð±Ñ€Ð°Ð½");
 $resStatus = CSaleStatus::GetList($arOrder = Array("SORT"=>"ASC", "NAME"=>"ASC"));
 while ($stype = $resStatus->Fetch()) {
     $orderStatuses[$stype["ID"]] = $stype["NAME"];
 }
 
-$orderStatuses["komtet_kassa_do_not_fiscalize"] = "Íå âûäàâàòü";
+$orderStatuses["komtet_kassa_do_not_fiscalize"] = "ÐÐµ Ð²Ñ‹Ð´Ð°Ð²Ð°Ñ‚ÑŒ";
 $form->AddDropDownField(
     'PREPAYMENT_ORDER_STATUS',
     GetMessage('KOMTETKASSA_OPTIONS_PREPAYMENT_ORDER_STATUS'),
