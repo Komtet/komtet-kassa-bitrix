@@ -24,8 +24,9 @@ if ($REQUEST_METHOD == 'POST' && check_bitrix_sessid()) {
     $data = array(
         'shop_id' => 'string',
         'secret_key' => 'string',
-        'should_print' => 'bool',
         'queue_id' => 'string',
+        'should_print' => 'bool',
+        'is_internet' => 'bool',
         'tax_system' => 'integer',
         'calculation_subject' => 'string',
         'pay_systems' => 'array',
@@ -83,14 +84,6 @@ $form->AddEditField(
     COption::GetOptionString($moduleId, 'secret_key')
 );
 
-$form->AddCheckBoxField(
-    'SHOULD_PRINT',
-    GetMessage('KOMTETKASSA_OPTIONS_SHOULD_PRINT'),
-    true,
-    COption::GetOptionInt($moduleId, 'should_print'),
-    COption::GetOptionInt($moduleId, 'should_print') == 1
-);
-
 $form->AddEditField(
     'QUEUE_ID',
     GetMessage('KOMTETKASSA_OPTIONS_QUEUE_ID'),
@@ -100,6 +93,22 @@ $form->AddEditField(
         'maxlength' => 255
     ),
     COption::GetOptionString($moduleId, 'queue_id')
+);
+
+$form->AddCheckBoxField(
+    'SHOULD_PRINT',
+    GetMessage('KOMTETKASSA_OPTIONS_SHOULD_PRINT'),
+    true,
+    COption::GetOptionInt($moduleId, 'should_print'),
+    COption::GetOptionInt($moduleId, 'should_print') == 1
+);
+
+$form->AddCheckBoxField(
+    'IS_INTERNET',
+    GetMessage('KOMTETKASSA_OPTIONS_IS_INTERNET'),
+    true,
+    COption::GetOptionInt($moduleId, 'is_internet'),
+    COption::GetOptionInt($moduleId, 'is_internet') == 1
 );
 
 $form->AddDropDownField(
@@ -164,13 +173,13 @@ AddMultiSelectField(
     json_decode(COption::GetOptionString($moduleId, 'pay_systems'))
 );
 
-$orderStatuses = array(null => "ÐÐµ Ð²Ñ‹Ð±Ñ€Ð°Ð½");
+$orderStatuses = array(null => "Íå âûáðàí");
 $resStatus = CSaleStatus::GetList($arOrder = Array("SORT"=>"ASC", "NAME"=>"ASC"));
 while ($stype = $resStatus->Fetch()) {
     $orderStatuses[$stype["ID"]] = $stype["NAME"];
 }
 
-$orderStatuses["komtet_kassa_do_not_fiscalize"] = "ÐÐµ Ð²Ñ‹Ð´Ð°Ð²Ð°Ñ‚ÑŒ";
+$orderStatuses["komtet_kassa_do_not_fiscalize"] = "Íå âûäàâàòü";
 $form->AddDropDownField(
     'PREPAYMENT_ORDER_STATUS',
     GetMessage('KOMTETKASSA_OPTIONS_PREPAYMENT_ORDER_STATUS'),
