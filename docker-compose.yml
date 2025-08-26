@@ -3,7 +3,7 @@ version: '3.4'
 services:
   db:
     image: mysql:8.0.0
-    container_name: db
+    container_name: bitrix_db
     environment:
       MYSQL_ROOT_PASSWORD: my_secret_pw_shh
       MYSQL_DATABASE: test_db

@@ -64,6 +64,7 @@ class KomtetKassaBase
 {
     protected $manager;
     protected $shouldPrint;
+    protected $isInternet;
     protected $taxSystem;
 
     public function __construct()
@@ -74,6 +75,7 @@ class KomtetKassaBase
         $this->manager->registerQueue('default', $options['queue_id']);
         $this->manager->setDefaultQueue('default');
         $this->shouldPrint = $options['should_print'];
+        $this->isInternet = $options['is_internet'];
         $this->calculationSubject = $options['calculation_subject'];
         $this->taxSystem = $options['tax_system'];
         $this->paySystems = $options['pay_systems'];
@@ -94,6 +96,7 @@ class KomtetKassaBase
             'secret' => COption::GetOptionString($moduleID, 'secret_key'),
             'queue_id' => COption::GetOptionString($moduleID, 'queue_id'),
             'should_print' => COption::GetOptionInt($moduleID, 'should_print') == 1,
+            'is_internet' => COption::GetOptionInt($moduleID, 'is_internet') == 1,
             'calculation_subject' => COption::GetOptionString($moduleID, 'calculation_subject', CalculationSubject::PRODUCT),
             'tax_system' => intval(COption::GetOptionInt($moduleID, 'tax_system')),
             'pay_systems' => json_decode(COption::GetOptionString($moduleID, 'pay_systems')),
@@ -292,6 +295,11 @@ class KomtetKassaOld extends KomtetKassaBase
         );
         $check->setShouldPrint($this->shouldPrint);
 
+        // Признак расчета в сети «Интернет»
+        if ($this->isInternet) {
+            $check->setInternet(true);
+        }
+
         $checkPayment = $this->getPayment(
             $order['PAY_SYSTEM_ID'],
             $order['PERSON_TYPE_ID'],
@@ -448,6 +456,11 @@ class KomtetKassaD7 extends KomtetKassaBase
             $this->taxSystem
         );
         $check->setShouldPrint($this->shouldPrint);
+
+        // Признак расчета в сети «Интернет»
+        if ($this->isInternet) {
+            $check->setInternet(true);
+        }
 
         $payments = array();
         $innerBillPayments = array();

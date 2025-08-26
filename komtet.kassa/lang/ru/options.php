@@ -1,19 +1,20 @@
 <?php
 $MESS['KOMTETKASSA_OPTIONS_SHOP_ID'] = 'Идентификатор магазина';
 $MESS['KOMTETKASSA_OPTIONS_SECRET_KEY'] = 'Секретный ключ';
-$MESS['KOMTETKASSA_OPTIONS_SHOULD_PRINT'] = 'Печатать чек';
 $MESS['KOMTETKASSA_OPTIONS_QUEUE_ID'] = 'Идентификатор очереди';
+$MESS['KOMTETKASSA_OPTIONS_SHOULD_PRINT'] = 'Печатать чек';
+$MESS['KOMTETKASSA_OPTIONS_IS_INTERNET'] = 'Признак расчета в сети «Интернет»';
 $MESS['KOMTETKASSA_OPTIONS_TAX_SYSTEM'] = 'Система налогооблажения';
 $MESS['KOMTETKASSA_OPTIONS_CALCULATION_SUBJECT'] = 'Предмет расчета';
 $MESS['KOMTETKASSA_OPTIONS_PAY_SYSTEMS'] = 'Платежные системы';
-$MESS['KOMTETKASSA_OPTIONS_FULL_PAYMENT_ORDER_STATUS'] = 'Статус заказа для полной оплаты';
-$MESS['KOMTETKASSA_OPTIONS_PREPAYMENT_ORDER_STATUS'] = 'Статус заказа для предоплаты';
+$MESS['KOMTETKASSA_OPTIONS_PREPAYMENT_ORDER_STATUS'] = 'Статус заказа для чека полной предоплаты';
+$MESS['KOMTETKASSA_OPTIONS_FULL_PAYMENT_ORDER_STATUS'] = 'Статус заказа для чека полного расчета';
 $MESS['KOMTETKASSA_OPTIONS_FISCALIZATION_START_DATE'] = 'Выдавать чеки на заказы, созданные после этой даты (можно не указывать)';
 
 $MESS['KOMTETKASSA_OPTIONS_TS_COMMON'] = 'ОСН';
 $MESS['KOMTETKASSA_OPTIONS_TS_SIMPLIFIED_IN'] = 'УСН доход';
 $MESS['KOMTETKASSA_OPTIONS_TS_SIMPLIFIED_IN_OUT'] = 'УСН доход - расход';
-$MESS['KOMTETKASSA_OPTIONS_TS_UST'] = 'ЕСН';
+$MESS['KOMTETKASSA_OPTIONS_TS_UST'] = 'ЕСХН';
 $MESS['KOMTETKASSA_OPTIONS_TS_PATENT'] = 'Патент';
 
 $MESS['KOMTETKASSA_OPTIONS_CALCULATION_SUBJECT_PRODUCT'] = 'Товар';

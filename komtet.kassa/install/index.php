@@ -34,6 +34,7 @@ class komtet_kassa extends CModule
         $this->DoInstallFiles();
         COption::SetOptionString($this->MODULE_ID, 'server_url', 'https://kassa.komtet.ru');
         COption::SetOptionInt($this->MODULE_ID, 'should_print', 1);
+        COption::SetOptionInt($this->MODULE_ID, 'is_internet', 1);
         RegisterModule($this->MODULE_ID);
 
         $saleModuleInfo = CModule::CreateModuleObject('sale');
