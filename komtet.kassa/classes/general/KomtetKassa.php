@@ -195,6 +195,9 @@ class KomtetKassaBase
             else if (intval((floatval($position->getField('VAT_RATE')) * 100)) == 20) {
                 $itemVatRate = '20/120';
             }
+            else if (intval((floatval($position->getField('VAT_RATE')) * 100)) == 22) {
+                $itemVatRate = '22/122';
+            }
         }
 
         $pos = new Position(
@@ -554,6 +557,9 @@ class KomtetKassaD7 extends KomtetKassaBase
                     }
                     else if (intval((floatval($shipment->getVatRate()) * 100)) == 20) {
                         $shipmentVatRate = '20/120';
+                    }
+                    else if (intval((floatval($shipment->getVatRate()) * 100)) == 22) {
+                        $shipmentVatRate = '22/122';
                     }
                 }
 

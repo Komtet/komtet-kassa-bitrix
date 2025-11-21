@@ -14,6 +14,19 @@ services:
     ports:
       - '9906:3306'
 
+  bitrix_phpmyadmin:
+    container_name: bitrix_phpmyadmin
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    ports:
+      - 8080:80
+    environment:
+      PMA_HOST: db
+      PMA_ARBITRARY: 1
+      MYSQL_ROOT_PASSWORD: my_secret_pw_shh
+    depends_on:
+      - db
+
   web_8_2:
     build:
       context: .
