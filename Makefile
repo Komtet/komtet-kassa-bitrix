@@ -18,23 +18,19 @@ build:  ## Собрать контейнер
 	@sudo chmod -R 777 php/ &&\
 	 docker-compose build
 
-start_web7:  ## Запустить контейнер с php7
-	@docker-compose up -d web7
-
-start_web_8_1:  ## Запустить контейнер с php 8.1
-	@docker-compose up -d web_8_1
-
 start_web_8_2:  ## Запустить контейнер с php 8.2
-	@docker-compose up -d web_8_2
+	@docker-compose up web_8_2
 
 stop:  ## Остановить контейнер
 	@docker-compose down
 
 update_kassa:  ##Обновить плагин для фискализации
-	@cp -r -f komtet.kassa php/bitrix/modules/
+	@cp -r -f komtet.kassa php/bitrix/modules/ &&\
+	 echo "Плагин Komtet.kassa обновлен"
 
 update_delivery:  ##Обновить плагин для доставки
-	@cp -r -f komtet-kassa-bitrix-delivery/komtet.delivery php/bitrix/modules/
+	@cp -r -f komtet-kassa-bitrix-delivery/komtet.delivery php/bitrix/modules/ &&\
+	 echo "Плагин Komtet.delivery обновлен"
 
 .PHONY: version  release
 .DEFAULT_GOAL := version
