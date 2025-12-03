@@ -78,11 +78,6 @@ make start_web7
   После чего запустить контейнер на необходимой версии php 8.x
   (https://helpdesk.bitrix24.ru/open/17332020/)
 
-- Запустить проект с php 8.1
-
-```sh
-make start_web_8_1
-```
 
 - Запустить проект с php 8.2
 
