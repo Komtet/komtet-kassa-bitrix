@@ -34,7 +34,7 @@ $scheme = array_key_exists('HTTPS', $_SERVER) && strtolower($_SERVER['HTTPS']) !
 $url = sprintf('%s://%s%s', $scheme, $_SERVER['SERVER_NAME'], $_SERVER['REQUEST_URI']);
 $data = file_get_contents('php://input');
 $signature = hash_hmac('md5', $_SERVER['REQUEST_METHOD'] . $url . $data, $secret);
-if ($signature != $_SERVER['HTTP_X_HMAC_SIGNATURE']) {
+if (!hash_equals($signature, $_SERVER['HTTP_X_HMAC_SIGNATURE'])) {
     header('HTTP/1.1 403 Forbidden');
     exit();
 }
