@@ -31,11 +31,11 @@ PREVIOUS_TAG=$(git tag -l --sort=-creatordate | head -2 | tail -1)
 [ -z "$PREVIOUS_TAG" ] && { echo -e "${RED}Предыдущий тег не найден${COLOR_OFF}"; exit 1; }
 echo -e "${CYAN}Предыдущая версия проекта: ${YELLOW}${PREVIOUS_TAG}${COLOR_OFF}\n"
 
-DIFFS=$(git diff $LAST_TAG $PREVIOUS_TAG --name-only | grep komtet.kassa)
+DIFFS=$(git diff $LAST_TAG $PREVIOUS_TAG --name-only | grep komtet.kassa | grep -Fv 'komtet-kassa-php-sdk/.git/')
 
 # Архивирование для маркетплейса
 mkdir -p "$DIST_MARKET_DIR"
-tar --transform="flags=r;s|^komtet.kassa|$VERSION|" -czf $DIST_MARKET_DIR/$VERSION_TAR $DIFFS
+tar --exclude='.git' --exclude='.git/*' --transform="flags=r;s|^komtet.kassa|$VERSION|" -czf $DIST_MARKET_DIR/$VERSION_TAR $DIFFS
 
 echo -e "\n${CYAN}Сборка обновлений завершена.${COLOR_OFF}"
 echo -e "${CYAN}Для маркетплейса: ${YELLOW}${DIST_MARKET_DIR}/${VERSION_TAR}${COLOR_OFF}"
