@@ -221,8 +221,7 @@ class KomtetKassaBase
          * @param int $position_id Идентификатор позиции в заказе
          */
         global $DB;
-
-        $strSql = "SELECT MARKING_CODE FROM b_sale_store_barcode WHERE MARKING_CODE != '' AND BASKET_ID = " . $position_id;
+        $strSql = "SELECT MARKING_CODE FROM b_sale_store_barcode WHERE MARKING_CODE != '' AND BASKET_ID = " . intval($paySystemId);
         $dbRes = $DB->Query($strSql, false);
 
         $nomenclature_codes = [];
@@ -253,7 +252,7 @@ class KomtetKassaOld extends KomtetKassaBase
     protected function getPayment($paySystemId, $personTypeId, $sum, $isFullPayment)
     {
         global $DB;
-        $strSql = "SELECT * FROM b_sale_pay_system_action WHERE PAY_SYSTEM_ID = $paySystemId";
+        $strSql = "SELECT * FROM b_sale_pay_system_action WHERE PAY_SYSTEM_ID = " . intval($paySystemId);
         $res = $DB->Query($strSql);
 
         while ($pAction = $res->Fetch()) {
