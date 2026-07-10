@@ -42,3 +42,13 @@ services:
       - db:mysql
     stdin_open: true
     tty: true
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+    depends_on:
+      - db

@@ -3,32 +3,21 @@
 use Komtet\KassaSdk\Exception\ApiValidationException;
 use Komtet\KassaSdk\Exception\ClientException;
 use Komtet\KassaSdk\Exception\SdkException;
-use Komtet\KassaSdk\v2\Buyer;
-use Komtet\KassaSdk\v2\Check;
-use Komtet\KassaSdk\v2\Client;
-use Komtet\KassaSdk\v2\Company;
-use Komtet\KassaSdk\v2\MarkCode;
-use Komtet\KassaSdk\v2\Measure;
-use Komtet\KassaSdk\v2\Payment;
-use Komtet\KassaSdk\v2\PaymentMethod;
-use Komtet\KassaSdk\v2\PaymentObject;
-use Komtet\KassaSdk\v2\Position;
-use Komtet\KassaSdk\v2\SectoralItemProps;
-use Komtet\KassaSdk\v2\TaxSystem;
-use Komtet\KassaSdk\v2\QueueManager;
-use Komtet\KassaSdk\v2\Vat;
-
-use Bitrix\Main\Event;
-use Bitrix\Sale\Order;
-use Bitrix\Main\SiteTable;
+use Komtet\KassaSdk\v1\CalculationMethod;
+use Komtet\KassaSdk\v1\CalculationSubject;
+use Komtet\KassaSdk\v1\Check;
+use Komtet\KassaSdk\v1\Client;
+use Komtet\KassaSdk\v1\Nomenclature;
+use Komtet\KassaSdk\v1\Payment;
+use Komtet\KassaSdk\v1\Position;
+use Komtet\KassaSdk\v1\TaxSystem;
+use Komtet\KassaSdk\v1\QueueManager;
+use Komtet\KassaSdk\v1\Vat;
 use Bitrix\Main\UserTable;
-
-use Bitrix\Main\Diag\Debug;
 
 
 class KomtetKassa
 {
-
     public static function handleSalePayOrder($id, $val)
     {
         if (gettype($id) == 'object') {
@@ -43,30 +32,30 @@ class KomtetKassa
             return;
         }
 
-        $kk = new KomtetKassaOld();
-        $kk->printCheck($id);
+        $ok = new KomtetKassaOld();
+        $ok->printCheck($id);
     }
 
     public static function newHandleSalePayOrder($order)
     {
 
-        if (!$order instanceof Order) {
+        if (!gettype($order) == 'object') {
             return;
         }
 
-        $kk = new KomtetKassaD7();
-        $kk->printCheck($order);
+        $ok = new KomtetKassaD7();
+        $ok->printCheck($order);
     }
 
     public static function newHandleSaleSaveOrder($order)
     {
 
-        if (!$order instanceof Order) {
+        if (!gettype($order) == 'object') {
             return;
         }
 
-        $kk = new KomtetKassaD7();
-        $kk->printCheck($order);
+        $ok = new KomtetKassaD7();
+        $ok->printCheck($order);
     }
 }
 
@@ -78,27 +67,6 @@ class KomtetKassaBase
     protected $isInternet;
     protected $taxSystem;
 
-    protected const DEFAULT_FEDERAL_ID = '030';
-    protected const DEFAULT_DATE = '21.11.2023';
-    protected const DEFAULT_NUMBER = '1944';
-
-    protected static $measureMap = [
-        'Метр' => Measure::METER,
-        'Литр' => Measure::LITER,
-        'Грамм' => Measure::GRAMM,
-        'Килограмм' => Measure::KILOGRAMM,
-        'Штука' => Measure::PIECE
-    ];
-
-    protected static $prePaymentVatMap = [
-        0  => Vat::RATE_0,
-        5  => Vat::RATE_105,
-        7  => Vat::RATE_107,
-        10 => Vat::RATE_110,
-        20 => Vat::RATE_120,
-        22 => Vat::RATE_122
-    ];
-
     public function __construct()
     {
         $options = $this->getOptions();
@@ -108,7 +76,7 @@ class KomtetKassaBase
         $this->manager->setDefaultQueue('default');
         $this->shouldPrint = $options['should_print'];
         $this->isInternet = $options['is_internet'];
-        $this->paymentObject = $options['calculation_subject'];
+        $this->calculationSubject = $options['calculation_subject'];
         $this->taxSystem = $options['tax_system'];
         $this->paySystems = $options['pay_systems'];
         $this->fullPaymentOrderStatus = $options['full_payment_order_status'];
@@ -129,7 +97,7 @@ class KomtetKassaBase
             'queue_id' => COption::GetOptionString($moduleID, 'queue_id'),
             'should_print' => COption::GetOptionInt($moduleID, 'should_print') == 1,
             'is_internet' => COption::GetOptionInt($moduleID, 'is_internet') == 1,
-            'calculation_subject' => COption::GetOptionString($moduleID, 'calculation_subject', PaymentObject::PRODUCT),
+            'calculation_subject' => COption::GetOptionString($moduleID, 'calculation_subject', CalculationSubject::PRODUCT),
             'tax_system' => intval(COption::GetOptionInt($moduleID, 'tax_system')),
             'pay_systems' => json_decode(COption::GetOptionString($moduleID, 'pay_systems')),
             'full_payment_order_status' => COption::GetOptionString($moduleID, 'full_payment_order_status'),
@@ -158,8 +126,8 @@ class KomtetKassaBase
         // 1 check way
         if (!$this->prepaymentOrderStatus && $orderStatus == $this->fullPaymentOrderStatus) {
             return array(
-                'paymentMethod' => PaymentMethod::FULL_PAYMENT,
-                'paymentObject' => $this->paymentObject,
+                'calculationMethod' => CalculationMethod::FULL_PAYMENT,
+                'calculationSubject' => $this->calculationSubject,
                 'isFullPayment' => false
             );
         }
@@ -168,33 +136,33 @@ class KomtetKassaBase
             // prepayment
             if ($orderStatus == $this->prepaymentOrderStatus) {
                 return array(
-                    'paymentMethod' => PaymentMethod::PRE_PAYMENT_FULL,
-                    'paymentObject' => PaymentObject::PAYMENT,
+                    'calculationMethod' => CalculationMethod::PRE_PAYMENT_FULL,
+                    'calculationSubject' => CalculationSubject::PAYMENT,
                     'isFullPayment' => false
                 );
             }
             // full payment
             else if ($orderStatus == $this->fullPaymentOrderStatus &&
-                     ($orderExistingStatus == PaymentMethod::PRE_PAYMENT_FULL ||
-                      $orderExistingStatus == PaymentMethod::PRE_PAYMENT_FULL.":done" ||
-                      $orderExistingStatus == PaymentMethod::FULL_PAYMENT.":error")
+                     ($orderExistingStatus == CalculationMethod::PRE_PAYMENT_FULL ||
+                      $orderExistingStatus == CalculationMethod::PRE_PAYMENT_FULL.":done" ||
+                      $orderExistingStatus == CalculationMethod::FULL_PAYMENT.":error")
                 ) {
                 return array(
-                    'paymentMethod' => PaymentMethod::FULL_PAYMENT,
-                    'paymentObject' => $this->paymentObject,
+                    'calculationMethod' => CalculationMethod::FULL_PAYMENT,
+                    'calculationSubject' => $this->calculationSubject,
                     'isFullPayment' => true
                 );
             }
         }
 
         return array(
-            'paymentMethod' => null,
-            'paymentObject' => null,
+            'calculationMethod' => null,
+            'calculationSubject' => null,
             'isFullPayment' => null
         );
     }
 
-    protected function generatePosition($position, $payment_method = null, $payment_object = null, $quantity = 1)
+    protected function generatePosition($position, $calc_method = null, $calc_subject = null, $quantity = 1)
     {
         /**
          * Получени позиции заказа
@@ -214,15 +182,22 @@ class KomtetKassaBase
          * Ставка НДС в Битрикс хранится дробно, поэтому преобразовываем её для сравнения.
          * К примеру, НДС 20% в битрикс 0.2, НДС 5% в битриксе 0.05.
          */
-        if ($payment_method == PaymentMethod::PRE_PAYMENT_FULL) {
-            $vatPercent = (int) round($position->getVatRate() * 100);
-            $itemVatRate = self::$prePaymentVatMap[$vatPercent];
-        }
-
-        $measure = Measure::PIECE;
-        $bitrixPositionMeasure = mb_convert_encoding($position->getField('MEASURE_NAME'), 'UTF-8', LANG_CHARSET);
-        if ($bitrixPositionMeasure) {
-            $measure = $this->measureMap[$bitrixPositionMeasure] ?? Measure::PIECE;
+        if ($calc_method == CalculationMethod::PRE_PAYMENT_FULL) {
+            if (intval((floatval($position->getField('VAT_RATE')) * 100)) == 5) {
+                $itemVatRate = '5/105';
+            }
+            else if (intval((floatval($position->getField('VAT_RATE')) * 100)) == 7) {
+                $itemVatRate = '7/107';
+            }
+            else if (intval((floatval($position->getField('VAT_RATE')) * 100)) == 10) {
+                $itemVatRate = '10/110';
+            }
+            else if (intval((floatval($position->getField('VAT_RATE')) * 100)) == 20) {
+                $itemVatRate = '20/120';
+            }
+            else if (intval((floatval($position->getField('VAT_RATE')) * 100)) == 22) {
+                $itemVatRate = '22/122';
+            }
         }
 
         $pos = new Position(
@@ -230,66 +205,30 @@ class KomtetKassaBase
             round($position->getPrice(), 2),
             $quantity,
             round($position->getPrice()*$quantity, 2),
-            new Vat($itemVatRate),
-            $measure,
-            $payment_method,
-            $payment_object
+            new Vat($itemVatRate)
         );
+
+        $pos->setCalculationMethod($calc_method);
+        $pos->setCalculationSubject($calc_subject);
 
         return $pos;
     }
 
-    public function getMarkingCodes($position_id)
+    public function getNomenclatureCodes($position_id)
     {
         /**
          * Получени списка маркировок
          * @param int $position_id Идентификатор позиции в заказе
          */
         global $DB;
-        $strSql = "SELECT MARKING_CODE FROM b_sale_store_barcode WHERE MARKING_CODE != '' AND BASKET_ID = " . intval($position_id);
+        $strSql = "SELECT MARKING_CODE FROM b_sale_store_barcode WHERE MARKING_CODE != '' AND BASKET_ID = " . intval($paySystemId);
         $dbRes = $DB->Query($strSql, false);
 
-        $mark_codes = [];
-        while ($mark_code = $dbRes->Fetch()) {
-            array_push($mark_codes, $mark_code['MARKING_CODE']);
+        $nomenclature_codes = [];
+        while ($nomenclature_code = $dbRes->Fetch()) {
+            array_push($nomenclature_codes, $nomenclature_code['MARKING_CODE']);
         }
-
-        return $mark_codes;
-    }
-
-    protected function getMarkingProps($markingCode) {
-        $decoded = base64_decode($markingCode, true);
-        if ($decoded !== false && mb_check_encoding($decoded, 'UTF-8')) {
-            $decodedMarkingCode = $decoded;
-        } else {
-            $decodedMarkingCode = $markingCode;
-        }
-
-        $result = [
-            'code' => $decodedMarkingCode,
-            'sectoral_props' => null,
-        ];
-
-        if (is_string($decodedMarkingCode) && strpos($decodedMarkingCode, '{') === 0) {
-            $data = json_decode($decodedMarkingCode, true);
-            if (is_array($data) && isset($data['code'])) {
-                $result['code'] = $data['code'];
-
-                $reqId = $data['reqId'] ?? null;
-                $reqTimestamp = $data['reqTimestamp'] ?? null;
-
-                if ($reqId && $reqTimestamp) {
-                    $result['sectoral_props'] = [
-                        'federal_id' => self::DEFAULT_FEDERAL_ID,
-                        'date'       => self::DEFAULT_DATE,
-                        'number'     => self::DEFAULT_NUMBER,
-                        'value'      => 'UUID=' . $reqId . '&Time=' . $reqTimestamp,
-                    ];
-                }
-            }
-        }
-
-        return $result;
+        return $nomenclature_codes;
     }
 
     /**
@@ -308,13 +247,133 @@ class KomtetKassaBase
 }
 
 
-// class KomtetKassaOld extends KomtetKassaBase
+class KomtetKassaOld extends KomtetKassaBase
+{
+    protected function getPayment($paySystemId, $personTypeId, $sum, $isFullPayment)
+    {
+        global $DB;
+        $strSql = "SELECT * FROM b_sale_pay_system_action WHERE PAY_SYSTEM_ID = " . intval($paySystemId);
+        $res = $DB->Query($strSql);
+
+        while ($pAction = $res->Fetch()) {
+            $arFilter = array(
+                'PAY_SYSTEM_ID' => $paySystemId,
+                'PERSON_TYPE_ID' => $personTypeId
+            );
+            $resPaySystemAction = CSalePaySystemAction::GetList(array(), $arFilter);
+            while ($pAction = $resPaySystemAction->Fetch()) {
+                $arPath = explode('/', $pAction['ACTION_FILE']);
+                if (end($arPath) == 'cash') {
+
+                    // если FullPayment, то ставится prepayment - закрытие предоплаты
+                    $type = $isFullPayment ? Payment::TYPE_PREPAYMENT : Payment::TYPE_CASH;
+
+                    return new Payment($type, round($sum, 2));
+                }
+            }
+        }
+
+        // если FullPayment, то ставится prepayment - закрытие предоплаты
+        $type = $isFullPayment ? Payment::TYPE_PREPAYMENT : Payment::TYPE_CARD;
+
+        return new Payment($type, round($sum, 2));
+    }
+
+    public function printCheck($orderID)
+    {
+        $order = CSaleOrder::GetByID($orderID);
+
+        $paymentProps = $this->getPaymentProps($order['STATUS_ID'], true);
+        if ($paymentProps['calculationMethod'] == null) {
+            return;
+        }
+
+        $user = CUser::GetByID($order['USER_ID'])->Fetch();
+        $userPhone = $user['PERSONAL_MOBILE'] ? $user['PERSONAL_MOBILE'] : $user['PERSONAL_PHONE'];
+        $check = Check::createSell(
+            $orderID,
+            $user['EMAIL'] ? $user['EMAIL'] : $userPhone,
+            $this->taxSystem
+        );
+        $check->setShouldPrint($this->shouldPrint);
+
+        // Признак расчета в сети «Интернет»
+        if ($this->isInternet) {
+            $check->setInternet(true);
+        }
+
+        $checkPayment = $this->getPayment(
+            $order['PAY_SYSTEM_ID'],
+            $order['PERSON_TYPE_ID'],
+            floatval($order['PRICE']),
+            $paymentProps['isFullPayment']
+        );
+        $check->addPayment($checkPayment);
+
+        $dbBasket = CSaleBasket::GetList(
+            array("ID" => "ASC"),
+            array("ORDER_ID" => $order['ID']),
+            false,
+            false,
+            array("NAME", "QUANTITY", "PRICE", "DISCOUNT_PRICE", "VAT_RATE")
+        );
+
+        while ($item = $dbBasket->GetNext()) {
+            if ($this->taxSystem == TaxSystem::COMMON) {
+                $itemVatRate = round(floatval($item['VAT_RATE']) * 100, 2);
+            } else {
+                $itemVatRate = Vat::RATE_NO;
+            }
+
+            $checkPosition = new Position(
+                mb_convert_encoding($item['NAME'], 'UTF-8', LANG_CHARSET),
+                round($item['PRICE'], 2),
+                floatval($item['QUANTITY']),
+                round(($item['PRICE'] - $item['DISCOUNT_PRICE']) * $item['QUANTITY'], 2),
+                new Vat($itemVatRate)
+            );
+
+            if ($item['MEASURE_NAME']) {
+                $checkPosition->setMeasureName(mb_convert_encoding($item['MEASURE_NAME'], 'UTF-8', LANG_CHARSET));
+            }
+
+            $checkPosition->setCalculationMethod($paymentProps['calculationMethod']);
+            $checkPosition->setCalculationSubject($paymentProps['calculationSubject']);
+
+            $check->addPosition($checkPosition);
+        }
+
+        $deliveryPrice = round($order['PRICE_DELIVERY'], 2);
+        if ($deliveryPrice > 0.0) {
+            $delivery = CSaleDelivery::GetByID($order['DELIVERY_ID']);
+
+            $deliveryPosition = new Position(
+                mb_convert_encoding($delivery['NAME'], 'UTF-8', LANG_CHARSET),
+                $deliveryPrice,
+                1,
+                $deliveryPrice,
+                new Vat(Vat::RATE_NO)
+            );
+
+            $deliveryPosition->setCalculationMethod($paymentProps['calculationMethod']);
+            $deliveryPosition->setCalculationSubject(CalculationSubject::SERVICE);
+
+            $check->addPosition($deliveryPosition);
+        }
+
+        try {
+            $this->manager->putCheck($check);
+        } catch (SdkException $e) {
+            error_log(sprintf('Failed to send check: %s', $e->getMessage()));
+        }
+    }
+}
 
 
 class KomtetKassaD7 extends KomtetKassaBase
 {
 
-    protected function getCheckPayment($payment, $isFullPayment)
+    protected function getPayment($payment, $isFullPayment)
     {
 
         $paySystem = $payment->getPaySystem();
@@ -332,27 +391,9 @@ class KomtetKassaD7 extends KomtetKassaBase
         return new Payment($type, round($payment->getSum(), 2));
     }
 
-    protected function getSiteUrl($order)
-    {
-        $siteId = $order->getSiteId() ?: SITE_ID;
-
-        $siteData = SiteTable::getList([
-            'filter' => ['=LID' => $siteId],
-            'select' => ['SERVER_NAME']
-        ])->fetch();
-
-        if ($siteData && $siteData['SERVER_NAME']) {
-            $serverName = $siteData['SERVER_NAME'];
-            $schema = (CMain::IsHTTPS() ? 'https' : 'http');
-            $siteUrl = $schema . '://' . $serverName;
-            return $siteUrl;
-        } else {
-            return SITE_SERVER_NAME;
-        }
-    }
-
     public function printCheck($order)
     {
+
         $existingRow = KomtetKassaReportsTable::getRow(
             array(
                 'select' => array('*'),
@@ -363,26 +404,26 @@ class KomtetKassaD7 extends KomtetKassaBase
 
         if (
             ($order->getField('STATUS_ID') == $this->fullPaymentOrderStatus &&
-             ($existingRow['state'] == PaymentMethod::FULL_PAYMENT ||
-              $existingRow['state'] == PaymentMethod::FULL_PAYMENT.":done")) ||
+             ($existingRow['state'] == CalculationMethod::FULL_PAYMENT ||
+              $existingRow['state'] == CalculationMethod::FULL_PAYMENT.":done")) ||
             ($order->getField('STATUS_ID') == $this->prepaymentOrderStatus &&
-             ($existingRow['state'] == PaymentMethod::PRE_PAYMENT_FULL ||
-              $existingRow['state'] == PaymentMethod::PRE_PAYMENT_FULL.":done")) ||
+             ($existingRow['state'] == CalculationMethod::PRE_PAYMENT_FULL ||
+              $existingRow['state'] == CalculationMethod::PRE_PAYMENT_FULL.":done")) ||
             $existingRow['state'] == "done" ||
             ($this->fiscalizationStartDate &&
              (
                 $order->getDateInsert()->getTimestamp() <
                 DateTime::createFromFormat('d.m.Y', $this->fiscalizationStartDate)->getTimestamp()
              ))
-             ||
-            (
-                !in_array($order->getField('STATUS_ID'), [$this->fullPaymentOrderStatus, $this->prepaymentOrderStatus])
-            )
         ) {
             return;
         }
 
         $paymentProps = $this->getPaymentProps($order->getField('STATUS_ID'), $existingRow['state']);
+
+        if ($paymentProps['calculationMethod'] === null) {
+            return;
+        }
 
         $propertyCollection = $order->getPropertyCollection();
         $userEmail = $propertyCollection->getUserEmail();
@@ -411,17 +452,10 @@ class KomtetKassaD7 extends KomtetKassaBase
             }
         }
 
-        $buyer = new Buyer();
-        $buyer->setEmail($userEmail);
-        $buyer->setPhone($userPhone);
-
-        $siteUrl = $this->getSiteUrl($order);
-        $company = new Company($this->taxSystem, $siteUrl);
-
         $check = Check::createSell(
             $order->getId(),
-            $buyer,
-            $company
+            $userEmail ? $userEmail : $userPhone,
+            $this->taxSystem
         );
         $check->setShouldPrint($this->shouldPrint);
 
@@ -441,7 +475,7 @@ class KomtetKassaD7 extends KomtetKassaBase
                 continue;
             }
 
-            $checkPayment = $this->getCheckPayment($payment, $paymentProps['isFullPayment']);
+            $checkPayment = $this->getPayment($payment, $paymentProps['isFullPayment']);
             $payments[] = $checkPayment;
         }
 
@@ -456,16 +490,15 @@ class KomtetKassaD7 extends KomtetKassaBase
         $positions = $order->getBasket();
 
         foreach ($positions as $position) {
-            if ($position->getField('MARKING_CODE_GROUP') // товару в позиции присвоена группа маркировки: обувь, табак и т.п.
-                && $paymentProps['paymentMethod'] == PaymentMethod::FULL_PAYMENT)
-            {
+            if ($position->getField('MARKING_CODE_GROUP')
+            && $paymentProps['calculationMethod'] == CalculationMethod::FULL_PAYMENT) {
                 $positionID = $position->getField('ID');
-                $mark_codes = $this->getMarkingCodes($positionID); // маркировки этого товара
+                $nomenclature_codes = $this->getNomenclatureCodes($positionID);
 
-                if (!$mark_codes || count($mark_codes) < $position->getQuantity()) {
+                if (count($nomenclature_codes) < $position->getQuantity()) {
                     KomtetKassaReportsTable::add([
                         'order_id' => $order->getId(),
-                        'state' => $paymentProps['paymentMethod'].":error",
+                        'state' => $paymentProps['calculationMethod'].":error",
                         'error_description' => "Маркировки заданы не у всех товаров"]
                     );
                     return;
@@ -474,33 +507,18 @@ class KomtetKassaD7 extends KomtetKassaBase
                 for ($item = 0; $item < $position->getQuantity(); $item++) {
                     $marked_position = $this->generatePosition(
                         $position,
-                        $paymentProps['paymentMethod'],
-                        $paymentProps['paymentObject']
+                        $paymentProps['calculationMethod'],
+                        $paymentProps['calculationSubject']
                     );
-                    $mark_code = array_shift($mark_codes);
-
-                    $marking_props = $this->getMarkingProps($mark_code);
-
-                    $marked_position->setMarkCode(new MarkCode(MarkCode::GS1M, $marking_props['code']));
-
-                    if (isset($marking_props['sectoral_props'])) {
-                        $marked_position->setSectoralItemProps(
-                            new SectoralItemProps(
-                                $marking_props['sectoral_props']['federal_id'],
-                                $marking_props['sectoral_props']['date'],
-                                $marking_props['sectoral_props']['number'],
-                                $marking_props['sectoral_props']['value']
-                            )
-                        );
-                    }
-
+                    $nomenclature_code = array_shift($nomenclature_codes);
+                    $marked_position->setNomenclature(new Nomenclature($nomenclature_code));
                     $check->addPosition($marked_position);
                 }
             } else {
                 $check->addPosition($this->generatePosition(
                     $position,
-                    $paymentProps['paymentMethod'],
-                    $paymentProps['paymentObject'],
+                    $paymentProps['calculationMethod'],
+                    $paymentProps['calculationSubject'],
                     $position->getQuantity()
                 ));
             }
@@ -513,8 +531,8 @@ class KomtetKassaD7 extends KomtetKassaBase
         $shipmentCollection = $order->getShipmentCollection();
         foreach ($shipmentCollection as $shipment) {
 
+            // Если в Битриксе у доставки ставка НДС "БЕЗ НДС", то НДС возвращается как 0
             if ($shipment->getPrice() > 0.0) {
-                // Если в Битриксе у доставки ставка НДС "БЕЗ НДС", то НДС возвращается как 0
                 $shipmentVatRate = Vat::RATE_NO;
 
                 if (method_exists($shipment, 'getVatRate') && floatval($shipment->getVatRate())) {
@@ -526,9 +544,22 @@ class KomtetKassaD7 extends KomtetKassaBase
                  * Ставка НДС в Битрикс хранится дробно, поэтому преобразовываем её для сравнения.
                  * К примеру, НДС 20% в битрикс 0.2, НДС 5% в битриксе 0.05.
                  */
-                if ($paymentProps['paymentMethod'] == PaymentMethod::PRE_PAYMENT_FULL) {
-                    $vatPercent = (int) round($shipment->getVatRate() * 100);
-                    $shipmentVatRate = self::$prePaymentVatMap[$vatPercent];
+                if ($paymentProps['calculationMethod'] == CalculationMethod::PRE_PAYMENT_FULL) {
+                    if (intval((floatval($shipment->getVatRate()) * 100)) == 5) {
+                        $shipmentVatRate = '5/105';
+                    }
+                    else if (intval((floatval($shipment->getVatRate()) * 100)) == 7) {
+                        $shipmentVatRate = '7/107';
+                    }
+                    else if (intval((floatval($shipment->getVatRate()) * 100)) == 10) {
+                        $shipmentVatRate = '10/110';
+                    }
+                    else if (intval((floatval($shipment->getVatRate()) * 100)) == 20) {
+                        $shipmentVatRate = '20/120';
+                    }
+                    else if (intval((floatval($shipment->getVatRate()) * 100)) == 22) {
+                        $shipmentVatRate = '22/122';
+                    }
                 }
 
                 $shipmentPosition = new Position(
@@ -536,11 +567,10 @@ class KomtetKassaD7 extends KomtetKassaBase
                     round($shipment->getPrice(), 2),
                     1,
                     round($shipment->getPrice(), 2),
-                    new Vat($shipmentVatRate),
-                    Measure::PIECE,
-                    $paymentProps['paymentMethod'],
-                    PaymentObject::SERVICE
+                    new Vat($shipmentVatRate)
                 );
+                $shipmentPosition->setCalculationMethod($paymentProps['calculationMethod']);
+                $shipmentPosition->setCalculationSubject(CalculationSubject::SERVICE);
 
                 $check->addPosition($shipmentPosition);
             }
@@ -551,7 +581,7 @@ class KomtetKassaD7 extends KomtetKassaBase
         } catch (ApiValidationException $e) {
             KomtetKassaReportsTable::add([
                 'order_id' => $order->getId(),
-                'state' => $paymentProps['paymentMethod'].":error",
+                'state' => $paymentProps['calculationMethod'].":error",
                 'error_description' => $e->getMessage()." ".$e->getDescription()
                 ]
             );
@@ -560,7 +590,7 @@ class KomtetKassaD7 extends KomtetKassaBase
         } catch (SdkException $e) {
             KomtetKassaReportsTable::add([
                 'order_id' => $order->getId(),
-                'state' => $paymentProps['paymentMethod'].":error",
+                'state' => $paymentProps['calculationMethod'].":error",
                 'error_description' => $e->getMessage()
                 ]
             );
@@ -569,7 +599,7 @@ class KomtetKassaD7 extends KomtetKassaBase
         } catch (ClientException $e) {
             KomtetKassaReportsTable::add([
                 'order_id' => $order->getId(),
-                'state' => $paymentProps['paymentMethod'].":error",
+                'state' => $paymentProps['calculationMethod'].":error",
                 'error_description' => $e->getMessage()
                 ]
             );
@@ -578,7 +608,7 @@ class KomtetKassaD7 extends KomtetKassaBase
         }
         KomtetKassaReportsTable::add([
             'order_id' => $order->getId(),
-            'state' => $paymentProps['paymentMethod'].":done",
+            'state' => $paymentProps['calculationMethod'].":done",
             'error_description' => '']
         );
     }
