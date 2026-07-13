@@ -221,7 +221,7 @@ class KomtetKassaBase
          * @param int $position_id Идентификатор позиции в заказе
          */
         global $DB;
-        $strSql = "SELECT MARKING_CODE FROM b_sale_store_barcode WHERE MARKING_CODE != '' AND BASKET_ID = " . intval($paySystemId);
+        $strSql = "SELECT MARKING_CODE FROM b_sale_store_barcode WHERE MARKING_CODE != '' AND BASKET_ID = " . intval($position_id);
         $dbRes = $DB->Query($strSql, false);
 
         $nomenclature_codes = [];
