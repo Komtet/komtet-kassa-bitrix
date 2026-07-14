@@ -19,7 +19,7 @@ build:  ## Собрать контейнер
 	 docker-compose build
 
 start_web_8_2:  ## Запустить контейнер с php 8.2
-	@docker-compose up web_8_2
+	@docker-compose up web_8_2 phpmyadmin
 
 stop:  ## Остановить контейнер
 	@docker-compose down
