@@ -242,7 +242,7 @@ class KomtetKassaBase
     public function getMarkingCodes($position_id)
     {
         /**
-         * Получени списка маркировок
+         * Получение списка маркировок
          * @param int $position_id Идентификатор позиции в заказе
          */
         global $DB;
@@ -277,8 +277,15 @@ class KomtetKassaBase
 
                 $reqId = $data['reqId'] ?? null;
                 $reqTimestamp = $data['reqTimestamp'] ?? null;
+                $inst = $data['inst'] ?? null;
+                $version = $data['version'] ?? null;
 
                 if ($reqId && $reqTimestamp) {
+
+                    if ($inst && $ver) {
+                        $value = $value . '&Inst=' . $inst . '&Ver=' . $ver;
+                    }
+
                     $result['sectoral_props'] = [
                         'federal_id' => self::DEFAULT_FEDERAL_ID,
                         'date'       => self::DEFAULT_DATE,
