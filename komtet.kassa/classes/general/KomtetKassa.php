@@ -282,6 +282,8 @@ class KomtetKassaBase
 
                 if ($reqId && $reqTimestamp) {
 
+                    $value = 'UUID=' . $reqId . '&Time=' . $reqTimestamp;
+
                     if ($inst && $ver) {
                         $value = $value . '&Inst=' . $inst . '&Ver=' . $ver;
                     }
@@ -290,7 +292,7 @@ class KomtetKassaBase
                         'federal_id' => self::DEFAULT_FEDERAL_ID,
                         'date'       => self::DEFAULT_DATE,
                         'number'     => self::DEFAULT_NUMBER,
-                        'value'      => 'UUID=' . $reqId . '&Time=' . $reqTimestamp,
+                        'value'      => $value,
                     ];
                 }
             }
