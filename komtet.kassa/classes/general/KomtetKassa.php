@@ -284,8 +284,8 @@ class KomtetKassaBase
 
                     $value = 'UUID=' . $reqId . '&Time=' . $reqTimestamp;
 
-                    if ($inst && $ver) {
-                        $value = $value . '&Inst=' . $inst . '&Ver=' . $ver;
+                    if ($inst && $version) {
+                        $value = $value . '&Inst=' . $inst . '&Ver=' . $version;
                     }
 
                     $result['sectoral_props'] = [
