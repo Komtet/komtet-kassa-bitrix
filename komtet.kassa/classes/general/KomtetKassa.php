@@ -266,8 +266,7 @@ class KomtetKassaBase
         }
 
         $result = [
-            'code' => $decodedMarkingCode,
-            'sectoral_props' => null,
+            'code' => $decodedMarkingCode
         ];
 
         if (is_string($decodedMarkingCode) && strpos($decodedMarkingCode, '{') === 0) {
