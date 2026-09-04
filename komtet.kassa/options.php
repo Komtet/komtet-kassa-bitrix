@@ -37,13 +37,20 @@ if ($REQUEST_METHOD == 'POST' && check_bitrix_sessid()) {
     foreach ($data as $key => $type) {
         $value = filter_input(INPUT_POST, strtoupper($key));
         if ($type == 'string') {
+            $value = strip_tags(trim((string)$value));
             COption::SetOptionString($moduleId, $key, $value);
         } else if ($type == 'bool') {
-            COption::SetOptionInt($moduleId, $key, $value === null ? 0 : 1);
+            $value = filter_var(filter_input(INPUT_POST, strtoupper($key)), FILTER_VALIDATE_BOOLEAN);
+            COption::SetOptionInt($moduleId, $key, $value ? 1 : 0);
         } else if ($type == 'integer') {
             COption::SetOptionInt($moduleId, $key, $value);
         } else if ($type == 'array') {
             $value = filter_input(INPUT_POST, strtoupper($key), FILTER_DEFAULT, FILTER_FORCE_ARRAY);
+            array_walk_recursive($value, function(&$item) {
+                if (is_string($item)) {
+                    $item = strip_tags(trim($item));
+                }
+            });
             COption::SetOptionString($moduleId, $key, json_encode($value));
         }
     }
@@ -159,18 +166,32 @@ function AddMultiSelectField($form, $id, $content, $required, $arSelect, $value=
   );
 }
 
-$arPaySystem = array();
-$resPaySystem = CSalePaySystem::GetList($arOrder = Array("SORT"=>"ASC", "NAME"=>"ASC"));
-while ($ptype = $resPaySystem->Fetch()) {
-    $arPaySystem[$ptype["ID"]] = $ptype["NAME"];
+$paySystems = CSalePaySystem::GetList($arOrder = Array("SORT"=>"ASC", "NAME"=>"ASC"));
+$paySystemsList = array();
+while ($paySystem = $paySystems->Fetch()) {
+    $paySystemsList[$paySystem["ID"]] = $paySystem["NAME"];
 }
+
+$rawPaySystems = COption::GetOptionString($moduleId, 'pay_systems');
+$paySystemsSelected = json_decode($rawPaySystems);
+if (in_array($paySystemsSelected, [false, '', null], true)) {
+        $selectedPaySystemsIds = ["0"];
+        COption::SetOptionString($moduleId, 'pay_systems', json_encode($selectedPaySystemsIds));
+} else {
+    $selectedPaySystemsIds = $paySystemsSelected;
+    if (json_last_error() !== JSON_ERROR_NONE || $selectedPaySystemsIds === null) {
+        $selectedPaySystemsIds = ["0"];
+        COption::SetOptionString($moduleId, 'pay_systems', json_encode($selectedPaySystemsIds));
+    }
+}
+
 AddMultiSelectField(
     $form,
     'PAY_SYSTEMS[]',
     GetMessage('KOMTETKASSA_OPTIONS_PAY_SYSTEMS'),
     false,
-    $arPaySystem,
-    json_decode(COption::GetOptionString($moduleId, 'pay_systems'))
+    $paySystemsList,
+    $selectedPaySystemsIds
 );
 
 $orderStatuses = array(null => "Не выбран");

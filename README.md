@@ -54,12 +54,6 @@ sudo chmod -R 777 php
 make build
 ```
 
-- Запустить проект с php7
-
-```sh
-make start_web7
-```
-
 ## Установка Bitrix
 
 - Создание базы данных
