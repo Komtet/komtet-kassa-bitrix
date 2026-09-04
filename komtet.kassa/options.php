@@ -43,6 +43,10 @@ if ($REQUEST_METHOD == 'POST' && check_bitrix_sessid()) {
             $value = filter_var(filter_input(INPUT_POST, strtoupper($key)), FILTER_VALIDATE_BOOLEAN);
             COption::SetOptionInt($moduleId, $key, $value ? 1 : 0);
         } else if ($type == 'integer') {
+            $value = filter_var($value, FILTER_VALIDATE_INT);
+            if ($value === false) {
+                $value = null;
+            }
             COption::SetOptionInt($moduleId, $key, $value);
         } else if ($type == 'array') {
             $value = filter_input(INPUT_POST, strtoupper($key), FILTER_DEFAULT, FILTER_FORCE_ARRAY);
