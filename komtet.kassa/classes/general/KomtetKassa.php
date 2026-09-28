@@ -204,9 +204,8 @@ class KomtetKassaBase
 
         $itemVatRate = Vat::RATE_NO;
 
-        // Если в Битриксе у товара не выбрана ставка НДС или ставка "БЕЗ НДС", то НДС возвращается как 0
-        if (floatval($position->getField('VAT_RATE'))) {
-            $itemVatRate = floatval($position->getField('VAT_RATE'));
+        if (method_exists($position, 'getVatRate') && floatval($position->getVatRate())) {
+            $itemVatRate = floatval($position->getVatRate());
         }
 
         /**
@@ -214,7 +213,7 @@ class KomtetKassaBase
          * Ставка НДС в Битрикс хранится дробно, поэтому преобразовываем её для сравнения.
          * К примеру, НДС 20% в битрикс 0.2, НДС 5% в битриксе 0.05.
          */
-        if ($payment_method == PaymentMethod::PRE_PAYMENT_FULL) {
+        if ($payment_method == PaymentMethod::PRE_PAYMENT_FULL && $position->getVatRate() !== null) {
             $vatPercent = (int) round($position->getVatRate() * 100);
             $itemVatRate = self::$prePaymentVatMap[$vatPercent];
         }
