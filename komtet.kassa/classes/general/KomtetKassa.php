@@ -131,7 +131,7 @@ class KomtetKassaBase
             'is_internet' => COption::GetOptionInt($moduleID, 'is_internet') == 1,
             'calculation_subject' => COption::GetOptionString($moduleID, 'calculation_subject', PaymentObject::PRODUCT),
             'tax_system' => intval(COption::GetOptionInt($moduleID, 'tax_system')),
-            'pay_systems' => json_decode(COption::GetOptionString($moduleID, 'pay_systems')),
+            'pay_systems' => json_decode(COption::GetOptionString($moduleID, 'pay_systems'), true) ?: [],
             'full_payment_order_status' => COption::GetOptionString($moduleID, 'full_payment_order_status'),
             'prepayment_order_status' => COption::GetOptionString($moduleID, 'prepayment_order_status'),
             'fiscalization_start_date' => COption::GetOptionString($moduleID, 'fiscalization_start_date')
