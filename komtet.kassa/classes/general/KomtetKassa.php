@@ -131,7 +131,7 @@ class KomtetKassaBase
             'is_internet' => COption::GetOptionInt($moduleID, 'is_internet') == 1,
             'calculation_subject' => COption::GetOptionString($moduleID, 'calculation_subject', PaymentObject::PRODUCT),
             'tax_system' => intval(COption::GetOptionInt($moduleID, 'tax_system')),
-            'pay_systems' => json_decode(COption::GetOptionString($moduleID, 'pay_systems')),
+            'pay_systems' => json_decode(COption::GetOptionString($moduleID, 'pay_systems'), true) ?: [],
             'full_payment_order_status' => COption::GetOptionString($moduleID, 'full_payment_order_status'),
             'prepayment_order_status' => COption::GetOptionString($moduleID, 'prepayment_order_status'),
             'fiscalization_start_date' => COption::GetOptionString($moduleID, 'fiscalization_start_date')
@@ -204,9 +204,8 @@ class KomtetKassaBase
 
         $itemVatRate = Vat::RATE_NO;
 
-        // Если в Битриксе у товара не выбрана ставка НДС или ставка "БЕЗ НДС", то НДС возвращается как 0
-        if (floatval($position->getField('VAT_RATE'))) {
-            $itemVatRate = floatval($position->getField('VAT_RATE'));
+        if (method_exists($position, 'getVatRate') && floatval($position->getVatRate())) {
+            $itemVatRate = floatval($position->getVatRate());
         }
 
         /**
@@ -214,7 +213,7 @@ class KomtetKassaBase
          * Ставка НДС в Битрикс хранится дробно, поэтому преобразовываем её для сравнения.
          * К примеру, НДС 20% в битрикс 0.2, НДС 5% в битриксе 0.05.
          */
-        if ($payment_method == PaymentMethod::PRE_PAYMENT_FULL) {
+        if ($payment_method == PaymentMethod::PRE_PAYMENT_FULL && $position->getVatRate() !== null) {
             $vatPercent = (int) round($position->getVatRate() * 100);
             $itemVatRate = self::$prePaymentVatMap[$vatPercent];
         }
